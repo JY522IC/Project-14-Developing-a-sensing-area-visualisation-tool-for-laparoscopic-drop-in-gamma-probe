@@ -1,6 +1,6 @@
 # Group 4 - Project
-Developing a sensing area visualisation tool for laparoscopic drop in gamma probe.
 
+Developing a sensing area visualisation tool for laparoscopic drop in gamma probe.
 
 ## Project Log
 
