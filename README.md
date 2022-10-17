@@ -9,3 +9,4 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
  - Created GitHub repository for project files and logs.
  - Created Word document for project inception.
  - Received project explanation and suggested approach by the TAs.
+ - Searched aruco marker source code online to start learning how to implement.
