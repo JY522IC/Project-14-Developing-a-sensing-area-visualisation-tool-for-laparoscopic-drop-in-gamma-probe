@@ -5,6 +5,7 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
 ## Project Log
 
 ### Week 3 (17/10/22-23/10/22)
+2022/10/17 — 2022/10/23
 
 #### 2022/10/17 2pm-5pm
  - First meeting with project supervisor and TAs.
@@ -19,4 +20,7 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Brainstormed and decided on project proposal outline. 
   - Divided the introduction chapter among team members. 
   - Started writing the project introduction for the proposal. 
-  - Gathered reference papers that are relevant for the project. 
+  - Gathered reference papers that are relevant for the project.
+  - Started writing the project objectives.
+	 - Found implementation of Aruco marker for reference.
+  - Read up Intel RealSense SDK documentation.
