@@ -22,5 +22,5 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Started writing the project introduction for the proposal. 
   - Gathered reference papers that are relevant for the project.
   - Started writing the project objectives.
-	 - Found implementation of Aruco marker for reference.
+  - Found implementation of Aruco marker for reference.
   - Read up Intel RealSense SDK documentation.
