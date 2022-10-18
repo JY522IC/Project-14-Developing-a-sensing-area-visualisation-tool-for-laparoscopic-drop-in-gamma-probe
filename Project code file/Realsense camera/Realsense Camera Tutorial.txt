@@ -1,0 +1,5 @@
+# The website from Kaizhong's powerpoint:
+https://dev.intelrealsense.com/docs/ros-wrapper
+
+# The tutorial combines: Python, OpenCV and Intel Realsense Camera
+https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/opencv_viewer_example.py
