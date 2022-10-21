@@ -25,7 +25,9 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Found implementation of Aruco marker for reference.
   - Read up Intel RealSense SDK documentation.
 
-### 2022/10/20 9am-1pm
+### 2022/10/20 10am-1pm
   - Improve the 1st and 2nd chapter for inception report 
   - Start the 3rd part for inception report 
   - Researched materials for the methodology chapter 
+
+### 2022/10/21 10am-1pm
