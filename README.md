@@ -31,3 +31,11 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Researched materials for the methodology chapter 
 
 ### 2022/10/21 10am-1pm
+  - Improved the first three parts for inception report 
+  - Started with the Project Managment part of the article 
+  - Had a meeting with TA Kaizhong and got some suggestions for inception report 
+  - This weekends' plan for inception report: 
+        1) Rewrite overview 
+        2) Add Ros plan for chapter 2 and 3 
+        3) Finish the 4th part of inception report  
+        4) Reference 
