@@ -3,3 +3,12 @@ https://dev.intelrealsense.com/docs/ros-wrapper
 
 # The tutorial combines: Python, OpenCV and Intel Realsense Camera
 https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/opencv_viewer_example.py
+
+2022/10/24
+Camera test in Windows procedure:
+
+1. install the Intel SDK.
+https://github.com/IntelRealSense/librealsense/releases/tag/v2.51.1
+Intel.RealSense.Viewer.exe
+2. Install the pyrealsense2 of Python library
+3. Try the camera test file.py file in this folder
