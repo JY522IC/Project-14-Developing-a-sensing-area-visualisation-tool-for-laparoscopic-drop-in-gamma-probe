@@ -39,3 +39,9 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
         2) Add Ros plan for chapter 2 and 3
         3) Finish the 4th part of inception report  
         4) Reference
+
+### 2022/10/25
+  - Meet with Daniel
+  - Installed SDK for Intel realsense camera D435i
+  - Tested the code to get the image from camera in python
+  - Aruco function test on camera
