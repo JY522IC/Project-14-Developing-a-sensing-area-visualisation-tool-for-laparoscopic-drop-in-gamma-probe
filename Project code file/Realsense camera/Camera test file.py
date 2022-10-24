@@ -3,12 +3,7 @@ import numpy as np                        # Fundamental package for scientific c
 import matplotlib.pyplot as plt           # 2D plotting library producing publication quality figures
 from IPython.display import clear_output  # Clear the screen
 import pyrealsense2 as rs                 # Intel RealSense cross-platform open-source API
-import cv2
 print("Environment is Ready")
-
-# set aruco dictionary and parameters
-aruco_dict = cv2.aruco.Dictionary_get(ARUCO_DICT["DICT_4X4_50"])
-aruco_params = cv2.aruco.DetectorParameters_create()
 
 pipe = rs.pipeline()                      # Create a pipeline
 cfg = rs.config()                         # Create a default configuration
@@ -53,11 +48,7 @@ for _ in range(5):  # Increase to display more frames
     if depth_frame:
         colorized_streams.append(np.asanyarray(colorizer.colorize(depth_frame).get_data()))
     if color_frame:
-#         colorized_streams.append(np.asanyarray(color_frame.get_data()))
-        frame = np.asanyarray(color_frame.get_data())
-        corners, ids, rejected = cv2.aruco.detectMarkers(frame, arucoDict, parameters=arucoParams)
-	detected_markers = aruco_display(corners, ids, rejected, frame)
-        colorized_streams.append(detected_markers)
+        colorized_streams.append(np.asanyarray(color_frame.get_data()))
 
     for i, ax in enumerate(axs.flatten()):  # Iterate over all (Depth and RGB) colorized frames
         if i >= len(colorized_streams): continue  # When getting less frames than expected
