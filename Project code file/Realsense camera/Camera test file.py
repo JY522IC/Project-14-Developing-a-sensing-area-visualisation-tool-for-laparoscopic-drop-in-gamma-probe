@@ -56,7 +56,7 @@ for _ in range(5):  # Increase to display more frames
 #         colorized_streams.append(np.asanyarray(color_frame.get_data()))
         frame = np.asanyarray(color_frame.get_data())
         corners, ids, rejected = cv2.aruco.detectMarkers(frame, arucoDict, parameters=arucoParams)
-	    detected_markers = aruco_display(corners, ids, rejected, frame)
+	detected_markers = aruco_display(corners, ids, rejected, frame)
         colorized_streams.append(detected_markers)
 
     for i, ax in enumerate(axs.flatten()):  # Iterate over all (Depth and RGB) colorized frames
