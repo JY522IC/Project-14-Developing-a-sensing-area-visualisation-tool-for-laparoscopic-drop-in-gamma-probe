@@ -1,0 +1,4 @@
+1. Use cd +"direct in you computer" go into the computer directory 
+2. For the first time you download the github, use: github clone + SSH link
+3. Connect to database: git remote add + SSH link
+4. Everytime before add some file pull first. git pull 
