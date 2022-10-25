@@ -7,14 +7,15 @@ ARUCO_PARAMS = cv2.aruco.DetectorParameters_create()
 # Aruco Marker Class
 class ArucoMarker:
 
-    def __init__(self):
-        pass
+    def __init__(self, camera_matrix, dist_coef):
+        self.camera_matrix = camera_matrix
+        self.dist_coef = dist_coef
 
     def detect(self, image):
         return cv2.aruco.detectMarkers(image, ARUCO_DICT, parameters=ARUCO_PARAMS)
     
-    def detect_and_display(self, image):
-        corners, ids, rejected = self.detect(image)
+    def detect_and_display_box(self, image):
+        corners, ids, _ = self.detect(image)
 
         if len(corners) > 0:
             # flatten the ArUco IDs list
@@ -46,6 +47,23 @@ class ArucoMarker:
                 # draw the ArUco marker ID on the image
                 cv2.putText(image, str(markerID),(topLeft[0], topLeft[1] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                     0.5, (0, 255, 0), 2)
-                print("[Inference] ArUco marker ID: {}".format(markerID))
 
         return image
+    
+    def detect_and_display_pose(self, image):
+        corners, ids, _ = self.detect(image)
+
+        if len(corners) > 0:
+            # flatten the ArUco IDs list
+            ids = ids.flatten()
+
+            # estimate the pose of each marker
+            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners, 0.015, self.camera_matrix, self.dist_coef)
+
+            # (rvec-tvec).any() # get rid of that nasty numpy value array error
+            for (_, _, rvec, tvec) in zip(corners, ids, rvec, tvec):
+                # draw axis for the aruco markers
+                cv2.drawFrameAxes(image, self.camera_matrix, self.dist_coef, rvec, tvec, 0.1)
+
+        return image
+

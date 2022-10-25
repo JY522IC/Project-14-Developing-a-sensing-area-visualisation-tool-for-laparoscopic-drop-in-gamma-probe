@@ -57,16 +57,10 @@ except:
     print("Calibration could not be done ...")
 
 # Get the calibration result:
-retval, cameraMatrix, distCoeffs, rvecs, tvecs = cal
-print(retval)
-print()
-print(cameraMatrix)
-print()
-print(distCoeffs)
-print()
-print(rvecs)
-print()
-print(tvecs)
+_, camera_matrix, dist_coef, _, _ = cal
+
+# Save the calibration result:
+np.savez('calibration.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
 
 # Release everything:
 cap.release()
