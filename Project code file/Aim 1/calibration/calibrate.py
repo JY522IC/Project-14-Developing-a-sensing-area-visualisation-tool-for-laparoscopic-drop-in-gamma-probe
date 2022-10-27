@@ -4,36 +4,42 @@ Adapted from: https://gist.githubusercontent.com/edward1986/b54c0a1e645ec1e82bb0
               raw/861b29eeaf90e2861e05bc49a9fef0b7c3f92d9a/Aruco%20camera%20calibration.py
 """
 
-# Import required packages:
-import time
 import cv2
 import numpy as np
+import os
+import sys
 
-# Create dictionary and board object:
+# Add camera module to path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append('../')
+import camera
+
+# Create dictionary and board object
 dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
 board = cv2.aruco.CharucoBoard_create(4, 5, .025, .0125, dictionary)
 
-# Create board image to be used in the calibration process:
+# Create board image to be used in the calibration process
 image_board = board.draw((200 * 4, 200 * 5))
 
-# Write calibration board image:
+# Write calibration board image
 cv2.imwrite('charuco.png', image_board)
 
-# Create VideoCapture object:
-cap = cv2.VideoCapture(0)
+# Instantiate camera
+cam = camera.RealsenseCamera() # intel realsense
+# cam = camera.WebcamCamera() # webcam
 
 all_corners = []
 all_ids = []
 counter = 0
 for i in range(300):
 
-    # Read frame from the webcam:
-    ret, frame = cap.read()
+    # Get frame from the camera
+    frame = cam.get_frame()
 
-    # Convert to grayscale:
+    # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Detect markers:
+    # Detect markers
     res = cv2.aruco.detectMarkers(gray, dictionary)
 
     if len(res[0]) > 0:
@@ -49,19 +55,19 @@ for i in range(300):
         break
     counter += 1
 
-# Calibration can fail for many reasons:
+# Calibration can fail for many reasons
 try:
     cal = cv2.aruco.calibrateCameraCharuco(all_corners, all_ids, board, gray.shape, None, None)
 except:
-    cap.release()
+    cam.stop()
     print("Calibration could not be done ...")
 
-# Get the calibration result:
+# Get the calibration result
 _, camera_matrix, dist_coef, _, _ = cal
 
-# Save the calibration result:
-np.savez('calibration.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
+# Save the calibration result
+np.savez('calibration_realsense.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
+# np.savez('calibration_webcam.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
 
 # Release everything:
-cap.release()
 cv2.destroyAllWindows()
