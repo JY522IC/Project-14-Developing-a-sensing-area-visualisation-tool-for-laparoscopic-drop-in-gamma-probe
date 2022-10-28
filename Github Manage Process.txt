@@ -9,3 +9,5 @@ Everytime when you want to add something.
 3. git add .
 4. git commit -m "Comment"
 5. git push
+
+Switch Branch: git checout + "branch name"
