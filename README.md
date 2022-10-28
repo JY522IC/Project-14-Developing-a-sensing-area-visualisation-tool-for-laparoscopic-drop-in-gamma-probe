@@ -45,3 +45,13 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Installed SDK for Intel realsense camera D435i
   - Tested the code to get the image from camera in python
   - Aruco function test on camera
+
+### 2022/10/27 (10am — 1pm) 
+  - Modified the inception report according to suggestions from professor and TAS 
+  - Tested Aruco Marker algorithms  
+  - Implemented webcam camera calibration and modified to Realsense camera calibration 
+
+### 2022/10/28 (10am — 1pm) 
+  - Try the 3D reconstruction of RGB-D camera for D435i 
+  - Check the filter algorism for sample image we found 
+  - Check and upload the inception report 
