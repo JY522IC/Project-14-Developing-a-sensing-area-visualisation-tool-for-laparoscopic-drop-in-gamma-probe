@@ -40,11 +40,16 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
         3) Finish the 4th part of inception report  
         4) Reference
 
-### 2022/10/25
-  - Meet with Daniel
-  - Installed SDK for Intel realsense camera D435i
-  - Tested the code to get the image from camera in python
-  - Aruco function test on camera
+### 2022/10/24 2pm—5pm
+  - Meet with Daniel 
+  - Installed SDK for Intel realsense camera D435i 
+  - Tested the code to get the image from camera in python 
+  - Aruco function test on camera 
+
+### 2022/10/25 2pm—5pm 
+  - Read opencv online resources and tried blob detection 
+  - Implemented Aruco Marker detection algorithm 
+  - Developed github code management standard  
 
 ### 2022/10/27 (10am — 1pm) 
   - Modified the inception report according to suggestions from professor and TAS 
