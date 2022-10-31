@@ -27,6 +27,7 @@ class RealsenseCamera:
             return None
 
         color_image = np.asanyarray(color_frame.get_data())
+        # print(color_image)
 
         return color_image
     
