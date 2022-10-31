@@ -60,3 +60,8 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Try the 3D reconstruction of RGB-D camera for D435i 
   - Check the filter algorism for sample image we found 
   - Check and upload the inception report 
+
+### 2022/10/31 2pm-6pm
+  - We report the works done of last week on meeting with Prof Dan
+  - We printed smaller aruco marker and paste it on probe
+  - We test our aruco algorithm to detect small marker on probe, problem encountered trying to solve on next meeting
