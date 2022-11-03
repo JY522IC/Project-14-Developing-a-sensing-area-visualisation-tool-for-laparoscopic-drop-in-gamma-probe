@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # cam = camera.WebcamCamera() # webcam
 
     # Load camera calibration
-    cam_cal = np.load('calibration/calibration_realsense.npz')
+    cam_cal = np.load("D:\\works\Powerpoint & PDF\\Postgraduate_study\\Group_project\\group_project\\Project code file\\Aim 1\\calibration\\calibration_realsense.npz")
     # cam_cal = np.load('calibration/calibration_webcam.npz')
     camera_matrix = cam_cal['camera_matrix']
     dist_coef = cam_cal['dist_coef']
@@ -25,6 +25,9 @@ if __name__ == "__main__":
         while True:
             # Get frame from the camera
             frame = cam.get_frame()
+            frame = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+            kernal = np.array([[-1,-1,-1],[-1,9,-1],[-1,-1,-1]])
+            frame = cv2.filter2D(frame,-1,kernal)
             
             # Detect markers
             # image = mark.detect_and_display_box(frame)

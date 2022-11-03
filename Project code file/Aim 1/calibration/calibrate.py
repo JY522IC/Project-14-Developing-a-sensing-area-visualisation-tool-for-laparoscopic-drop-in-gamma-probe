@@ -16,13 +16,13 @@ import camera
 
 # Create dictionary and board object
 dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-board = cv2.aruco.CharucoBoard_create(4, 5, .025, .0125, dictionary)
+board = cv2.aruco.CharucoBoard_create(4, 5, .025, .005, dictionary)
 
 # Create board image to be used in the calibration process
 image_board = board.draw((200 * 4, 200 * 5))
 
 # Write calibration board image
-cv2.imwrite('charuco.png', image_board)
+cv2.imwrite('charuco_small.png', image_board)
 
 # Instantiate camera
 cam = camera.RealsenseCamera() # intel realsense
@@ -68,6 +68,5 @@ _, camera_matrix, dist_coef, _, _ = cal
 # Save the calibration result
 np.savez('calibration_realsense.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
 # np.savez('calibration_webcam.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
-
 # Release everything:
 cv2.destroyAllWindows()
