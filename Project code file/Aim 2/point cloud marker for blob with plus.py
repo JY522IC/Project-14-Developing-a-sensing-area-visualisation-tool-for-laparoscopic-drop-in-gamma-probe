@@ -330,7 +330,7 @@ while True:
 
         depth_frame = decimate.process(depth_frame)
 
-        # new added - Yiyang
+        # Define the reason for color depth corresponse
         depth_sensor = profile.get_device().first_depth_sensor()
         depth_scale = depth_sensor.get_depth_scale()
         depth_to_color_extrin = depth_frame.profile.get_extrinsics_to(color_frame.profile)
@@ -393,16 +393,16 @@ while True:
         state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
+    # Draw the 3D line for the marker in space
     if keypoints != None:
         w, h = depth_image.shape[1], depth_image.shape[0]
         for k in keypoints:
             x, y = k.pt
-            x_dec, y_dec = int(x/(2**state.decimate)), int(y/(2**state.decimate))
-            # a,b = rs.rs2_transform_point_to_point(color_to_depth_extrin, [x,y])
+            x_dec, y_dec = x/(2**state.decimate), y/(2**state.decimate)
             depth_pixel = rs.rs2_project_color_pixel_to_depth_pixel(
                 depth_frame.get_data(),
                 depth_scale,
-                0.11,
+                0.01,
                 1.0,
                 depth_intrin,
                 color_intrin,
@@ -410,11 +410,13 @@ while True:
                 color_to_depth_extrin,
                 [x,y]
             )
+
             # Observer depth_pixel, depth_scale, x, y
-            if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h:
+            if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
+                    and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
                 p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x_dec, y_dec], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
-                line3d(out, view([p[0]-0.2, p[1], p[2]]), view([p[0]+0.2, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
-                line3d(out, view([p[0], p[1]-0.2, p[2]]), view([p[0], p[1]+0.2, p[2]]), (0x7a, 0xf7, 0x4d))
+                line3d(out, view([p[0]-0.02, p[1], p[2]]), view([p[0]+0.02, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
+                line3d(out, view([p[0], p[1]-0.02, p[2]]), view([p[0], p[1]+0.02, p[2]]), (0x7a, 0xf7, 0x4d))
 
     cv2.imshow(state.WIN_NAME, out)
     key = cv2.waitKey(1)
