@@ -14,7 +14,7 @@ class ArucoMarker:
     def detect(self, image):
         return cv2.aruco.detectMarkers(image, ARUCO_DICT, parameters=ARUCO_PARAMS)
     
-    def detect_and_display_box(self, image):
+    def detect_and_display_boundary(self, image):
         corners, ids, _ = self.detect(image)
 
         if len(corners) > 0:
