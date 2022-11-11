@@ -65,3 +65,40 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - We report the works done of last week on meeting with Prof Dan
   - We printed smaller aruco marker and paste it on probe
   - We test our aruco algorithm to detect small marker on probe, problem encountered trying to solve on next meeting
+
+### 2022/11/1 2pm—6pm
+  - Still working on the calibrate code 
+  - Spend time discuss what we have learned in Image Guided Intervention course and what methods can be used in our group project 
+
+### 2022/11/3 10am—1pm
+  - We re-calibrate the camera with small aruco marker 
+  - We tested camera with small aruco marker 
+  - Testing and integrate code 
+
+### 2022/11/4 10am—1pm
+  - We solved aruco detection problem with adding focus lens in front of camera 
+  - We tested that 150mm len works best with our camera 
+  - Refact and rearrange code files for better understanding 
+  
+### 2022/11/07 2pm—6pm
+  - We report the works done of last week on meeting with Kaizhong and Baoru. 
+  - Discuss marker development progress and RGB-Depth image correspondence. 
+  - Planning to start task 2 and 3 of the project. 
+  - Recap the project research, experiment, and result so far. 
+
+### 2022/11/08 2pm—6pm
+  - Start working on depth camera representation. 
+  - Modified 3D camera code to show marker in color space. 
+  - Tried to create marker in depth space, to be continued on the next session. 
+  - Research on Realsense colour and depth frame class for Python. 
+
+### 2022/11/10 10am—1pm
+  - Resolve error shifted 3D space representation. 
+  - Tried to create pixel representation on the 3D space. 
+  - Visualise identified markers as green plus signs in 3D space. 
+  - Encountered positional error for the marker depth. 
+
+### 2022/11/11 10am—1pm 
+  - Figured out how to systematically get the depth values from image x,y coordinates. 
+  - Resolve error of identified marker depth on the 3D space, with some x-y axis error. 
+  - Code refactoring and folder structure naming changes. 
