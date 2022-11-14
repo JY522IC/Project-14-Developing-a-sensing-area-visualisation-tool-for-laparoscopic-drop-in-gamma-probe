@@ -37,11 +37,20 @@ import cv2
 import numpy as np
 import pyrealsense2 as rs
 
-# Blob detecter
-# set aruco dictionary and parameters
-aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-aruco_params = cv2.aruco.DetectorParameters_create()
+import sys
+sys.path.insert(0, 'D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim_1\Detection\markers')
+import aruco
 
+cam_cal = np.load("D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim_1\Detection\calibration\calibration_realsense.npz")
+# cam_cal = np.load('D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim 1\Detection\calibration\calibration_webcam.npz')
+camera_matrix = cam_cal['camera_matrix']
+dist_coef = cam_cal['dist_coef']
+
+# Instantiate marker detector
+mark = aruco.ArucoMarker(camera_matrix, dist_coef)
+
+
+# Blob detecter
 params = cv2.SimpleBlobDetector_Params()
 # Change thresholds
 params.minThreshold = 10
@@ -345,7 +354,8 @@ while True:
 
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        keypoints = detector.detect(color_image)
+        # keypoints = detector.detect(color_image)
+        _,keypoints = mark.detect_and_display_boundary(color_image)
         print(keypoints)
 
         depth_colormap = np.asanyarray(
@@ -396,8 +406,8 @@ while True:
     # Draw the 3D line for the marker in space
     if keypoints != None:
         w, h = depth_image.shape[1], depth_image.shape[0]
-        for k in keypoints:
-            x, y = k.pt
+        for x, y in keypoints:
+            # x, y = k.pt
             x_dec, y_dec = x/(2**state.decimate), y/(2**state.decimate)
             depth_pixel = rs.rs2_project_color_pixel_to_depth_pixel(
                 depth_frame.get_data(),
