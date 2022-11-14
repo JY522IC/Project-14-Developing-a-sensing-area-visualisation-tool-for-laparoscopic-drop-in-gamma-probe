@@ -37,12 +37,20 @@ import cv2
 import numpy as np
 import pyrealsense2 as rs
 
-import cv2
+import sys
+sys.path.insert(0, 'D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim_1\Detection\markers')
+import aruco
+
+cam_cal = np.load("D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim_1\Detection\calibration\calibration_realsense.npz")
+# cam_cal = np.load('D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim 1\Detection\calibration\calibration_webcam.npz')
+camera_matrix = cam_cal['camera_matrix']
+dist_coef = cam_cal['dist_coef']
+
+# Instantiate marker detector
+mark = aruco.ArucoMarker(camera_matrix, dist_coef)
 
 
 # Blob detecter
-# set aruco dictionary and parameters
-
 params = cv2.SimpleBlobDetector_Params()
 # Change thresholds
 params.minThreshold = 10
@@ -346,7 +354,8 @@ while True:
 
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        keypoints = detector.detect(color_image)
+        # keypoints = detector.detect(color_image)
+        _,keypoints = mark.detect_and_display_boundary(color_image)
         print(keypoints)
 
         depth_colormap = np.asanyarray(
@@ -397,8 +406,8 @@ while True:
     # Draw the 3D line for the marker in space
     if keypoints != None:
         w, h = depth_image.shape[1], depth_image.shape[0]
-        for k in keypoints:
-            x, y = k.pt
+        for x, y in keypoints:
+            # x, y = k.pt
             x_dec, y_dec = x/(2**state.decimate), y/(2**state.decimate)
             depth_pixel = rs.rs2_project_color_pixel_to_depth_pixel(
                 depth_frame.get_data(),
@@ -415,9 +424,10 @@ while True:
             # Observer depth_pixel, depth_scale, x, y
             if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
                     and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
-                p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x_dec, y_dec], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
+                p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
                 line3d(out, view([p[0]-0.02, p[1], p[2]]), view([p[0]+0.02, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
                 line3d(out, view([p[0], p[1]-0.02, p[2]]), view([p[0], p[1]+0.02, p[2]]), (0x7a, 0xf7, 0x4d))
+
 
     cv2.imshow(state.WIN_NAME, out)
     key = cv2.waitKey(1)
