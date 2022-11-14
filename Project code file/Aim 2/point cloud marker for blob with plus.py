@@ -414,9 +414,10 @@ while True:
             # Observer depth_pixel, depth_scale, x, y
             if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
                     and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
-                p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x_dec, y_dec], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
+                p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
                 line3d(out, view([p[0]-0.02, p[1], p[2]]), view([p[0]+0.02, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
                 line3d(out, view([p[0], p[1]-0.02, p[2]]), view([p[0], p[1]+0.02, p[2]]), (0x7a, 0xf7, 0x4d))
+
 
     cv2.imshow(state.WIN_NAME, out)
     key = cv2.waitKey(1)
