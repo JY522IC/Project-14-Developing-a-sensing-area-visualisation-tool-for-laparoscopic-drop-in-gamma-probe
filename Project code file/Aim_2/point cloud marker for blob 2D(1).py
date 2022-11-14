@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# @Time    : 2022/10/28 10:39
+# @Time    : 2022/11/8 15:55
 # @Author  : Yiyang
-# @File    : point cloud reconstruction try.py
+# @File    : a.py
 # @Contact: jy522@ic.ac.uk
-# License: Apache 2.0. See LICENSE file in root directory.
-# Copyright(c) 2015-2017 Intel Corporation. All Rights Reserved.
 
 """
 OpenCV and Numpy Point cloud Software Renderer
@@ -36,6 +34,41 @@ import time
 import cv2
 import numpy as np
 import pyrealsense2 as rs
+import sys        
+
+# Blob detecter
+# set aruco dictionary and parameters
+aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
+aruco_params = cv2.aruco.DetectorParameters_create()
+
+params = cv2.SimpleBlobDetector_Params()
+# Change thresholds
+params.minThreshold = 10
+params.maxThreshold = 200
+
+
+# Filter by Area.
+params.filterByArea = True
+params.minArea = 50
+params.maxArea = 2000
+
+# Filter by Circularity
+params.filterByCircularity = True
+params.minCircularity = 0.1
+
+# Filter by Convexity
+params.filterByConvexity = True
+params.minConvexity = 0.85
+
+params.minRepeatability = 2
+params.minCircularity = 0.75
+
+# Filter by Inertia
+params.filterByInertia = True
+params.minInertiaRatio = 0.01
+detector = cv2.SimpleBlobDetector_create(params)
+
+
 
 class AppState:
 
@@ -85,8 +118,8 @@ if not found_rgb:
     print("The demo requires Depth camera with Color sensor")
     exit(0)
 
-config.enable_stream(rs.stream.depth, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, rs.format.bgr8, 30)
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -94,6 +127,7 @@ pipeline.start(config)
 # Get stream profile and camera intrinsics
 profile = pipeline.get_active_profile()
 depth_profile = rs.video_stream_profile(profile.get_stream(rs.stream.depth))
+# print("Depth Scale is: " , depth_profile)
 depth_intrinsics = depth_profile.get_intrinsics()
 w, h = depth_intrinsics.width, depth_intrinsics.height
 
@@ -299,6 +333,11 @@ while True:
 
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
+        keypoints = detector.detect(color_image)
+        p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [9, 9], 1)
+        line3d(out, view([0, 0, 0]), view(p), (0x40, 0x40, 0x40))
+        if len(keypoints) != 0:
+            cv2.circle(color_image, (round(keypoints[0].pt[0]), round(keypoints[0].pt[1])), 20, (0, 0, 255), 20)
 
         depth_colormap = np.asanyarray(
             colorizer.colorize(depth_frame).get_data())
