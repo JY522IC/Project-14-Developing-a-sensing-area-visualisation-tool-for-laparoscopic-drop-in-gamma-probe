@@ -6,7 +6,7 @@ First time use:
 Everytime when you want to add something.
 1. Everytime before add some file pull first: git pull 
 2. After editing file use: git status 
-3. git add .
+3. git add "xx.xx".
 4. git commit -m "Comment"
 5. git push
 
