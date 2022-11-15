@@ -2,7 +2,6 @@
 import camera
 import cv2
 import numpy as np
-
 from markers.aruco import ArucoMarker
 from markers.blob import BlobMarker
 
