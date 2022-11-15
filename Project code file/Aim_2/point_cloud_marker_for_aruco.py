@@ -9,17 +9,14 @@
 
 """
 OpenCV and Numpy Point cloud Software Renderer
-
 This sample is mostly for demonstration and educational purposes.
 It really doesn't offer the quality or performance that can be
 achieved with hardware acceleration.
-
 Usage:
 ------
 Mouse:
     Drag with left button to rotate around pivot (thick small axes),
     with right button to translate and the wheel to zoom.
-
 Keyboard:
     [p]     Pause
     [r]     Reset View
