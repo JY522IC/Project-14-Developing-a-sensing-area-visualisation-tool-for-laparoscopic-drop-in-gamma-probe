@@ -9,7 +9,6 @@ import argparse
 import json
 import sys
 import time
-
 import pyrealsense2 as rs
 
 __desc__ = """
@@ -41,7 +40,6 @@ fl_adjust_map = {
 
 ctx = rs.context()
 
-
 def main(arguments=None):
     args = parse_arguments(arguments)
 
@@ -60,6 +58,7 @@ def main(arguments=None):
             print(f'The example is intended for RealSense D400 Depth cameras, and is not', end =" ")
             print(f'applicable with {cam_name}')
             sys.exit(1)
+
     # 2. The routine assumes USB3 connection type
     #    In case of USB2 connection, the streaming profiles should be readjusted
     if device.supports(rs.camera_info.usb_type_descriptor):
@@ -68,7 +67,6 @@ def main(arguments=None):
             print('The script is designed to run with USB3 connection type.')
             print('In order to enable it with USB2.1 mode the fps rates for the Focal Length and Ground Truth calculation stages should be re-adjusted')
             sys.exit(1)
-
 
     # prepare device
     depth_sensor = device.first_depth_sensor()
@@ -80,8 +78,8 @@ def main(arguments=None):
     else:
         depth_sensor.set_option(rs.option.enable_auto_exposure, 0)
         depth_sensor.set_option(rs.option.exposure, int(args.exposure))
-
     print("Starting UCAL...")
+
     try:
         # The recomended sequence of procedures: On-Chip -> Focal Length -> Tare Calibration
         run_on_chip_calibration(args.onchip_speed, args.onchip_scan)
@@ -91,7 +89,6 @@ def main(arguments=None):
         if depth_sensor.supports(rs.option.thermal_compensation):
             depth_sensor.set_option(rs.option.thermal_compensation, 1)
     print("UCAL finished successfully")
-
 
 def progress_callback(progress):
     print(f'\rProgress  {progress}% ... ', end ="\r")
