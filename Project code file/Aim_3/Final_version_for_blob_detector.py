@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# @Time    : 2022/11/18 10:34
+# @Author  : Yiyang
+# @File    : test_JAY.py
+# @Contact: jy522@ic.ac.uk
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 # @Time    : 2022/10/28 10:39
 # @Author  : Yiyang
 # @File    : point cloud reconstruction try.py
@@ -36,9 +42,6 @@ import time
 import cv2
 import numpy as np
 import pyrealsense2 as rs
-
-import cv2
-
 
 # Blob detecter
 # set aruco dictionary and parameters
@@ -394,6 +397,34 @@ while True:
         state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
+    ## ---------------------------------------------------------------------------------------------------------------##
+    ## GUI design based on openCV
+
+    colors = {'blue': (255, 0, 0), 'green': (0, 255, 0), 'red': (0, 0, 255), 'cyan': (255, 255, 0),
+              'magenta': (255, 0, 255), 'yellow': (0, 255, 255), 'black': (0, 0, 0), 'white': (255, 255, 255),
+              'gray': (125, 125, 125), 'dark_gray': (50, 50, 50), 'light_gray': (220, 220, 220),
+              'rand': np.random.randint(0, high=256, size=(3,)).tolist()}
+
+    # Top text
+    text_0 = "Probe"
+    cv2.putText(color_image,text_0,(50,10),cv2.FONT_HERSHEY_SIMPLEX,1,colors['black'])
+
+    # Text on probe
+    x_avg = 0
+    y_avg = 0
+
+    # Draw the 2D line for the marker in color_image
+    if keypoints != None:
+        for k in keypoints:
+            x, y = k.pt
+            cv2.circle(color_image, (round(x), round(y)), 5, (0, 0, 255), 5)
+            x_avg += x
+            y_avg += y
+        if len(keypoints) != 0:
+            x_avg = x_avg/len(keypoints)
+            x_avg = x_avg/len(keypoints)
+            cv2.rectangle(color_image, (round(x_avg-50), round(y_avg-50)), (round(x_avg+50), round(y_avg+50)), colors['black'], 10)
+
     # Draw the 3D line for the marker in space
     if keypoints != None:
         w, h = depth_image.shape[1], depth_image.shape[0]
@@ -411,15 +442,18 @@ while True:
                 color_to_depth_extrin,
                 [x,y]
             )
-
             # Observer depth_pixel, depth_scale, x, y
             if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
                     and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
                 p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
-                line3d(out, view([p[0]-0.02, p[1], p[2]]), view([p[0]+0.02, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
-                line3d(out, view([p[0], p[1]-0.02, p[2]]), view([p[0], p[1]+0.02, p[2]]), (0x7a, 0xf7, 0x4d))
+                line3d(out, view([p[0]-0.01, p[1], p[2]]), view([p[0]+0.01, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
+                line3d(out, view([p[0], p[1]-0.01, p[2]]), view([p[0], p[1]+0.01, p[2]]), (0x7a, 0xf7, 0x4d))
 
-    cv2.imshow(state.WIN_NAME, out)
+
+
+
+    out2 = np.hstack([out, color_image])
+    cv2.imshow(state.WIN_NAME, out2)
     key = cv2.waitKey(1)
 
     if key == ord("r"):
