@@ -46,6 +46,7 @@ dist_coef = cam_cal['dist_coef']
 # Instantiate marker detector
 mark = aruco.ArucoMarker(camera_matrix, dist_coef)
 
+axesPoints = np.float32([[0,0,0], [0,0.1,0], [0,0,0.1]]).reshape(-1,3)
 
 # Blob detecter
 params = cv2.SimpleBlobDetector_Params()
@@ -353,6 +354,12 @@ while True:
         color_image = np.asanyarray(color_frame.get_data())
         # keypoints = detector.detect(color_image)
         _,keypoints = mark.detect_and_display_boundary(color_image)
+        _,rvec,tvec = mark.detect_and_display_pose(color_image)
+        print(rvec,tvec)
+        if(len(keypoints)>0):
+            for (rvec, tvec) in zip(rvec, tvec):
+                print(cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef))
+
         print(keypoints)
 
         depth_colormap = np.asanyarray(
