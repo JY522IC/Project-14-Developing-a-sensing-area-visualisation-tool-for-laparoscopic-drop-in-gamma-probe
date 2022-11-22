@@ -353,14 +353,11 @@ while True:
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
         # keypoints = detector.detect(color_image)
-        _,keypoints = mark.detect_and_display_boundary(color_image)
-        _,rvec,tvec = mark.detect_and_display_pose(color_image)
-        print(rvec,tvec)
-        if(len(keypoints)>0):
-            for (rvec, tvec) in zip(rvec, tvec):
-                print(cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef))
+        # _,keypoints = mark.detect_and_display_boundary(color_image)
+        _,rvec,tvec,centralPoints = mark.detect_and_display_pose(color_image)
+        # print(rvec,tvec)
 
-        print(keypoints)
+        # print(keypoints)
 
         depth_colormap = np.asanyarray(
             colorizer.colorize(depth_frame).get_data())
@@ -425,12 +422,22 @@ while True:
                 [x,y]
             )
 
+            if(np.size(rvec)>1):
+                image_points = 0
+                image_points=cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef)
+                rotation_matrix=cv2.Rodrigues(rvec)
+                rotation_matrix=np.dot(state.rotation,rotation_matrix)
+                centralPoints.append(depth_pixel)
+                line3d(out, view(centralPoints), view(centralPoints) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 0.5)
+                line3d(out, view(centralPoints), view(centralPoints) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 0.5)
+                line3d(out, view(centralPoints), view(centralPoints) + np.dot((0.1, 0, 0), rotation_matrix), (0, 0, 0xff), 0.5)
+
             # Observer depth_pixel, depth_scale, x, y
-            if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
-                    and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
-                p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
-                line3d(out, view([p[0]-0.02, p[1], p[2]]), view([p[0]+0.02, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
-                line3d(out, view([p[0], p[1]-0.02, p[2]]), view([p[0], p[1]+0.02, p[2]]), (0x7a, 0xf7, 0x4d))
+            # if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
+            #         and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
+            #     p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
+            #     line3d(out, view([p[0]-0.02, p[1], p[2]]), view([p[0]+0.02, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
+            #     line3d(out, view([p[0], p[1]-0.02, p[2]]), view([p[0], p[1]+0.02, p[2]]), (0x7a, 0xf7, 0x4d))
 
 
     cv2.imshow(state.WIN_NAME, out)
