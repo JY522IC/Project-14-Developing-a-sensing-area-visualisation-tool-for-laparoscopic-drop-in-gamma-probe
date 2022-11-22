@@ -102,3 +102,32 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Figured out how to systematically get the depth values from image x,y coordinates. 
   - Resolve error of identified marker depth on the 3D space, with some x-y axis error. 
   - Code refactoring and folder structure naming changes. 
+
+### 2022/11/14 2pm—6pm 
+  - Project meeting with Prof. Dan
+  - Solved the x,y shift problem found last week
+  - Changed the code to detect Aruco markers and display a plus sign on the centre of the Aruco markers in the 3D point cloud. 
+  - Started working on camera calibration with lens 
+
+### 2022/11/15 2pm—6pm 
+  - Started working on the GUI 
+  - Started working on pose estimation programs 
+  - Researched RGB to D calibration with lens but didn't get solutions 
+  - Discussed with TA Kaizhong and decided the plan: work on GUI, pose estimation and only calibrate the RGB camera  (might try to get a transformation matrix between results with lens and without lens) 
+
+### 2022/11/17 10am—1pm
+  - Looked up GUI libraries and discussed which to be used 
+  - Decided how to visualize the pose 
+
+### 2022/11/18 10am—1pm 
+  - Worked on Aruco pose calculation 
+  - Added GUI functions 
+  - Finalised marker design 
+  
+### 2022/11/21 2pm-6pm
+  - Project meeting with Prof.Dan
+  - Looked up PPT template
+  - Tried the 100mm lens
+  
+### 2022/11/22 2pm-6pm
+  - 
