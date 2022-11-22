@@ -53,7 +53,9 @@ class ArucoMarker:
     
     def detect_and_display_pose(self, image):
         corners, ids, _ = self.detect(image)
-
+        rvec=0
+        tvec=0
+        central_points=list()
         if len(corners) > 0:
             # flatten the ArUco IDs list
             ids = ids.flatten()
@@ -65,6 +67,19 @@ class ArucoMarker:
             for (_, _, rvec, tvec) in zip(corners, ids, rvec, tvec):
                 # draw axis for the aruco markers
                 cv2.drawFrameAxes(image, self.camera_matrix, self.dist_coef, rvec, tvec, 0.1)
+            for (markerCorner, markerID) in zip(corners, ids):
+                corners = markerCorner.reshape((4, 2))
+                (topLeft, topRight, bottomRight, bottomLeft) = corners
 
-        return image
+                # convert each of the (x, y)-coordinate pairs to integers
+                topRight = (int(topRight[0]), int(topRight[1]))
+                bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
+                bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
+                topLeft = (int(topLeft[0]), int(topLeft[1]))
+
+                cX = int((topLeft[0] + bottomRight[0]) / 2.0)
+                cY = int((topLeft[1] + bottomRight[1]) / 2.0)
+                central_points.append([cX,cY])
+
+        return image, rvec, tvec, central_points
 
