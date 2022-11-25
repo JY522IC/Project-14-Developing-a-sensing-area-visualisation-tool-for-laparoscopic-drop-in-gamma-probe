@@ -451,6 +451,15 @@ while True:
         state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
+
+    ## ---------------------------------------------------------------------------------------------------------------##
+    ## GUI design based on openCV
+
+    colors = {'blue': (255, 0, 0), 'green': (0, 255, 0), 'red': (0, 0, 255), 'cyan': (255, 255, 0),
+              'magenta': (255, 0, 255), 'yellow': (0, 255, 255), 'black': (0, 0, 0), 'white': (255, 255, 255),
+              'gray': (125, 125, 125), 'dark_gray': (50, 50, 50), 'light_gray': (220, 220, 220),
+              'rand': np.random.randint(0, high=256, size=(3,)).tolist()}
+
     # Draw the 3D line for the marker in space
     if centralPoints != []:
         w, h = depth_image.shape[1], depth_image.shape[0]
@@ -462,7 +471,6 @@ while True:
             except:
                 continue
             x, y = centralPoint[0], centralPoint[1]
-            x_dec, y_dec = x/(2**state.decimate), y/(2**state.decimate)
             depth_pixel = rs.rs2_project_color_pixel_to_depth_pixel(
                 depth_frame.get_data(),
                 depth_scale,
@@ -487,9 +495,70 @@ while True:
                     line3d(out, view(p), view(p) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 1)
                     line3d(out, view(p), view(p) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 1)
                     line3d(out, view(p), view(p) + np.dot((0.1, 0, 0), rotation_matrix), (0, 0, 0xff), 1)
+
+                    # Display probe distance on reconstruction image
+                    text_0 = "Probe Distance to Camera = " + str(depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale) + 'm'
+                    cv2.putText(color_image, text_0, (200, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, colors['red'])
+
                 except Exception as e:
                     print(e)
 
+        # Calculate the distance between the probe and the test point
+        if len(centralPoints) == 2:
+            centralPoint_1 = centralPoints[0]
+            x_1, y_1 = centralPoint_1[0], centralPoint_1[1]
+            point_depth_pixel_1 = rs.rs2_project_color_pixel_to_depth_pixel(
+                depth_frame.get_data(),
+                depth_scale,
+                0.01,
+                1.0,
+                depth_intrin,
+                color_intrin,
+                depth_to_color_extrin,
+                color_to_depth_extrin,
+                [x_1,y_1]
+            )
+
+            centralPoint_2 = centralPoints[1]
+            x_2, y_2 = centralPoint_2[0], centralPoint_2[1]
+            point_depth_pixel_2 = rs.rs2_project_color_pixel_to_depth_pixel(
+                depth_frame.get_data(),
+                depth_scale,
+                0.01,
+                1.0,
+                depth_intrin,
+                color_intrin,
+                depth_to_color_extrin,
+                color_to_depth_extrin,
+                [x_2,y_2]
+            )
+
+            if int(point_depth_pixel_1[0]) < depth_image.shape[0] and int(point_depth_pixel_1[1]) \
+                < depth_image.shape[1] and int(point_depth_pixel_1[0]) >= 0 and int(point_depth_pixel_1[1] and\
+                    point_depth_pixel_2[0]) < depth_image.shape[0] and int(point_depth_pixel_2[1]) \
+                    < depth_image.shape[1] and int(point_depth_pixel_2[0]) >= 0 and int(point_depth_pixel_2[1]) >= 0:
+                try:
+                    p_1 = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [point_depth_pixel_1[0], point_depth_pixel_1[1]]\
+                        , depth_image[int(point_depth_pixel_1[0]), int(point_depth_pixel_1[1])] * depth_scale)
+                    p_2 = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [point_depth_pixel_2[0], point_depth_pixel_2[1]]\
+                        , depth_image[int(point_depth_pixel_2[0]), int(point_depth_pixel_2[1])] * depth_scale)
+                    disance_between_points = ((p_1[0] - p_2[0])** 2 + (p_1[1] - p_2[1])** 2 + (p_1[2] - p_2[2])** 2) ** (0.5)
+
+                    print('point 1 position', p_1)
+                    print('point 2 position', p_2)
+                    print('distance between 2 points', disance_between_points)
+
+                    # Display the relative disdance and relative postion on reconstruction image
+                    text_1 = "Point 1 position: X = " + str(p_1[0]) + "Y = " + str(p_1[1]) + "Z = "+ str(p_1[2])
+                    text_2 = "Point 2 position: X = " + str(p_2[0]) + "Y = " + str(p_2[1]) + "Z = " + str(p_2[2])
+                    text_3 = "The relative distance between two point" + str(disance_between_points)
+                    cv2.putText(color_image, text_1, (220, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, colors['blue'])
+                    cv2.putText(color_image, text_2, (240, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, colors['blue'])
+                    cv2.putText(color_image, text_3, (2260, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, colors['blue'])
+
+                except Exception as e:
+                    # print(e)
+                    pass
 
     out2 = np.hstack([out, detected_image])
     cv2.imshow(state.WIN_NAME, out2)

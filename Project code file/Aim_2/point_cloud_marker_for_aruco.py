@@ -35,10 +35,10 @@ import numpy as np
 import pyrealsense2 as rs
 
 import sys
-sys.path.insert(0, r"C:\Users\AceFocus\imperial\group_project\repo\Project code file\Aim_1\Detection\markers")
+sys.path.insert(0, r"E:\Personal\First Term\Group Project\Code\Github\Project-14-Developing-a-sensing-area-visualisation-tool-for-laparoscopic-drop-in-gamma-probe\Project code file\Aim_1\Detection\markers")
 import aruco
 
-cam_cal = np.load(r"C:\Users\AceFocus\imperial\group_project\repo\Project code file\Aim_1\Detection\calibration\calibration_realsense.npz")
+cam_cal = np.load(r"E:\Personal\First Term\Group Project\Code\Github\Project-14-Developing-a-sensing-area-visualisation-tool-for-laparoscopic-drop-in-gamma-probe\Project code file\Aim_1\Detection\calibration\calibration_realsense.npz")
 # cam_cal = np.load('D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim 1\Detection\calibration\calibration_webcam.npz')
 camera_matrix = cam_cal['camera_matrix']
 dist_coef = cam_cal['dist_coef']
