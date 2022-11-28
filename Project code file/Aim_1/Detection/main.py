@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # cam = camera.WebcamCamera() # webcam
 
     # Load camera calibration
-    cam_cal = np.load("D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim_1\Detection\calibration\calibration_realsense.npz")
+    cam_cal = np.load(".\calibration\calibration_realsense.npz")
     # cam_cal = np.load('D:\works\Powerpoint & PDF\Postgraduate_study\Group_project\group_project\Project code file\Aim 1\Detection\calibration\calibration_webcam.npz')
     camera_matrix = cam_cal['camera_matrix']
     dist_coef = cam_cal['dist_coef']

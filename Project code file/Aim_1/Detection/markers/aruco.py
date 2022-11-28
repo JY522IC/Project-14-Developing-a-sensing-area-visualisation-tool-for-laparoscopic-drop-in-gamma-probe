@@ -53,22 +53,24 @@ class ArucoMarker:
     
     def detect_and_display_pose(self, image):
         corners, ids, _ = self.detect(image)
-        rvec=0
-        tvec=0
-        central_points=list()
+        rvecs = []
+        tvecs = []
+        central_points = []
         if len(corners) > 0:
             # flatten the ArUco IDs list
             ids = ids.flatten()
 
             # estimate the pose of each marker
             rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners, 0.015, self.camera_matrix, self.dist_coef)
+            rvecs.append(rvec)
+            tvecs.append(tvec)
 
             # (rvec-tvec).any() # get rid of that nasty numpy value array error
-            for (_, _, rvec, tvec) in zip(corners, ids, rvec, tvec):
+            for (markerCorners, rvec, tvec) in zip(corners, rvec, tvec):
                 # draw axis for the aruco markers
                 cv2.drawFrameAxes(image, self.camera_matrix, self.dist_coef, rvec, tvec, 0.1)
-            for (markerCorner, markerID) in zip(corners, ids):
-                corners = markerCorner.reshape((4, 2))
+
+                corners = markerCorners.reshape((4, 2))
                 (topLeft, topRight, bottomRight, bottomLeft) = corners
 
                 # convert each of the (x, y)-coordinate pairs to integers
@@ -81,5 +83,5 @@ class ArucoMarker:
                 cY = int((topLeft[1] + bottomRight[1]) / 2.0)
                 central_points.append([cX,cY])
 
-        return image, rvec, tvec, central_points
+        return image, rvecs, tvecs, central_points
 
