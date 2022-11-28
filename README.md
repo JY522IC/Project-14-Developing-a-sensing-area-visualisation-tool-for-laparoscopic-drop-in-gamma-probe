@@ -141,3 +141,8 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
 ### 2022/11/25 10am-1pm
   - Continued with the experiment
   - Analysis the error exist so far
+
+### 2022/11/28 2pm-6pm 
+  - Meeting with Dr.Daniel 
+  - Implement the problem we meet for find the depth and position of probe and coordinates 
+  - Discussion with kaizhong about the calibration problem with lens 
