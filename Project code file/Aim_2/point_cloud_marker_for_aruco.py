@@ -405,9 +405,9 @@ while True:
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
     # Draw the 3D line for the marker in space
-    if keypoints != None:
+    if centralPoints != None:
         w, h = depth_image.shape[1], depth_image.shape[0]
-        for x, y in keypoints:
+        for x, y in centralPoints:
             # x, y = k.pt
             x_dec, y_dec = x/(2**state.decimate), y/(2**state.decimate)
             depth_pixel = rs.rs2_project_color_pixel_to_depth_pixel(
@@ -426,7 +426,7 @@ while True:
                 image_points = 0
                 image_points=cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef)
                 rotation_matrix=cv2.Rodrigues(rvec)
-                rotation_matrix=np.dot(state.rotation,rotation_matrix)
+                # rotation_matrix=np.dot(state.rotation,rotation_matrix)
                 centralPoints.append(depth_pixel)
                 line3d(out, view(centralPoints), view(centralPoints) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 0.5)
                 line3d(out, view(centralPoints), view(centralPoints) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 0.5)

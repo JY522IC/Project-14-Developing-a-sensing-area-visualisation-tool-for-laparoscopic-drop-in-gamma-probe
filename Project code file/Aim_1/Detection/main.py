@@ -35,13 +35,14 @@ if __name__ == "__main__":
             # frame = cv2.filter2D(frame, -1, log_kernel)
             
             # Detect markers
-            _,image = mark.detect_and_display_boundary(frame)
-            if (len(image)!=0):
-                cv2.circle(frame, (round(image[0][0]), round(image[0][1])), 20, (0, 0, 255), 20)
+            image,r,t = mark.detect_and_display_pose(frame)
+            print(r,t)
+            # if (len(image)!=0):
+            #     cv2.circle(frame, (round(image[0][0]), round(image[0][1])), 20, (0, 0, 255), 20)
             # image = mark.detect_and_display_pose(frame)
 
             # Show image
-            cv2.imshow('Detect Markers', frame)
+            cv2.imshow('Detect Markers', image)
 
 
             key = cv2.waitKey(100)
