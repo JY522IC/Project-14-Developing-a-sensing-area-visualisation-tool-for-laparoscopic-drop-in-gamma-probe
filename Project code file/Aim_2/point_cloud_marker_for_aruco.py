@@ -409,16 +409,10 @@ while True:
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
     # Draw the 3D line for the marker in space
-    if centralPoints != []:
+    if keypoints != None:
         w, h = depth_image.shape[1], depth_image.shape[0]
-        for i in range(len(centralPoints)):
-            try:
-                centralPoint = centralPoints[i]
-                rvec = rvecs[i]
-                tvec = tvecs[i]
-            except:
-                continue
-            x, y = centralPoint[0], centralPoint[1]
+        for x, y in keypoints:
+            # x, y = k.pt
             x_dec, y_dec = x/(2**state.decimate), y/(2**state.decimate)
             depth_pixel = rs.rs2_project_color_pixel_to_depth_pixel(
                 depth_frame.get_data(),
@@ -433,16 +427,14 @@ while True:
             )
 
             if(np.size(rvec)>1):
-                try:
-                    image_points = cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef)
-                    rotation_matrix = cv2.Rodrigues(rvec)
-                    rotation_matrix = np.dot(state.rotation, rotation_matrix[0])
-                    p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
-                    line3d(out, view(p), view(p) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 1)
-                    line3d(out, view(p), view(p) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 1)
-                    line3d(out, view(p), view(p) + np.dot((0.1, 0, 0), rotation_matrix), (0, 0, 0xff), 1)
-                except:
-                    pass
+                image_points = 0
+                image_points=cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef)
+                rotation_matrix=cv2.Rodrigues(rvec)
+                rotation_matrix=np.dot(state.rotation,rotation_matrix)
+                centralPoints.append(depth_pixel)
+                line3d(out, view(centralPoints), view(centralPoints) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 0.5)
+                line3d(out, view(centralPoints), view(centralPoints) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 0.5)
+                line3d(out, view(centralPoints), view(centralPoints) + np.dot((0.1, 0, 0), rotation_matrix), (0, 0, 0xff), 0.5)
 
             # Observer depth_pixel, depth_scale, x, y
             # if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
