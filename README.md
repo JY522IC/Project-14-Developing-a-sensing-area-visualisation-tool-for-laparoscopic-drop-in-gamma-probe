@@ -127,7 +127,17 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
 ### 2022/11/21 2pm-6pm
   - Project meeting with Prof.Dan
   - Looked up PPT template
-  - Tried the 100mm lens
+  - Tried the 150mm lens
   
 ### 2022/11/22 2pm-6pm
-  - 
+  - Finished the PPT template 
+  - Find the Aruco pose axis in color image 
+  - Projected the direction axis to 3D space 
+  
+### 2022/11/24 10am-1pm
+  - Started did the experiment
+  - Checked the value get for depth
+  
+### 2022/11/25 10am-1pm
+  - Continued with the experiment
+  - Analysis the error exist so far
