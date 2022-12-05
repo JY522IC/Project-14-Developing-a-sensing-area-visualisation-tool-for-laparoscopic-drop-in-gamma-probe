@@ -146,3 +146,15 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Meeting with Dr.Daniel 
   - Implement the problem we meet for find the depth and position of probe and coordinates 
   - Discussion with kaizhong about the calibration problem with lens 
+
+### 2022/12/01 10am-1pm 
+  - Finish making the PPT template
+  - Try some way to fix the problem based on the original code
+
+### 2022/12/02 10am-12am 
+  - Look up the information about self-calibration using Pyrealsense camera
+  
+### 2022/12/03 1pm-6pm 
+  - Using Intel RealSense Viewer for On-chip Calibration, Tare clibration, focus-length calibration
+  
+  
