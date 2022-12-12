@@ -55,10 +55,13 @@ for i in range(300):
         break
     counter += 1
 
+
 # Calibration can fail for many reasons
 try:
     cal = cv2.aruco.calibrateCameraCharuco(all_corners, all_ids, board, gray.shape, None, None)
-except:
+    print(cal)
+except Exception as e:
+    print(e)
     cam.stop()
     print("Calibration could not be done ...")
 
@@ -66,7 +69,7 @@ except:
 _, camera_matrix, dist_coef, _, _ = cal
 
 # Save the calibration result
-np.savez('calibration_realsense.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
+np.savez('calibration_realsense2.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
 # np.savez('calibration_webcam.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
 # Release everything:
 cv2.destroyAllWindows()
