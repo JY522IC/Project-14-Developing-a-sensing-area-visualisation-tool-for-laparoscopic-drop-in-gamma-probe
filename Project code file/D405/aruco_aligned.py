@@ -476,10 +476,9 @@ while True:
                 rotation_matrix = cv2.Rodrigues(rvec)[0]
                 marker_depth = depth_image[int(y), int(x)] * depth_scale
                 p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x, y], marker_depth)
-
-                testing = rs.rs2_project_point_to_pixel( depth_intrinsics,[1,1,1])
+                testing = rs.rs2_project_point_to_pixel( depth_intrinsics,p)
                 print("testing++++++++++++++++++++++++++++++"+f"{testing}")
-                cv2.circle(detected_image, [testing[0],testing[1]], 0.4, "red", 1)
+                cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 1)
                 print(f"Marker depth: {marker_depth:.3f} m")
                 if p[2] <= 0:
                     continue
