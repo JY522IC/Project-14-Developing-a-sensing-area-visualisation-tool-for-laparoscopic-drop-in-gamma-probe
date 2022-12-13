@@ -167,10 +167,7 @@ for s in device.sensors:
     if s.get_info(rs.camera_info.name) == 'RGB Camera':
         found_rgb = True
         break
-<<<<<<< HEAD
-=======
 
->>>>>>> c5fb7d42b68448ff6efd5440a68ab09a4e3f118a
 config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
