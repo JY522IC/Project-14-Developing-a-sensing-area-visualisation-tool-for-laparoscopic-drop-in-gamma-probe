@@ -476,15 +476,26 @@ while True:
                 rotation_matrix = cv2.Rodrigues(rvec)[0]
                 marker_depth = depth_image[int(y), int(x)] * depth_scale
                 p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x, y], marker_depth)
-                testing = rs.rs2_project_point_to_pixel( depth_intrinsics,p)
-                print("testing++++++++++++++++++++++++++++++"+f"{testing}")
-                cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 1)
                 print(f"Marker depth: {marker_depth:.3f} m")
                 if p[2] <= 0:
                     continue
                 line3d(out, view(p), view(p + np.dot((0, 0, 0.1), rotation_matrix)), (0xff, 0, 0), 1)
                 line3d(out, view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)), (0, 0xff, 0), 1)
                 line3d(out, view(p), view(p + np.dot((0.1, 0, 0), rotation_matrix)), (0, 0, 0xff), 1)
+
+                # for pts in np.linspace(p, p + np.dot((0, 0.5, 0), rotation_matrix), 100):
+                #     for v in verts:
+                #         if np.linalg.norm(pts - v) < 0.01:
+                #             intersection_point = rs.rs2_project_point_to_pixel(color_intrin, v)
+                #             cv2.circle(detected_image, (int(intersection_point[0]), int(intersection_point[1])), 10, colors['red'], -1)
+                #             break
+
+                for item in np.linspace(view(p), view(p + np.dot((0, 3, 0), rotation_matrix)),100):
+                    testing = rs.rs2_project_point_to_pixel( depth_intrinsics,item)
+                    print(testing)
+                    testing2= rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing[0], testing[1]], depth_image[int(testing[0]), int(testing[1])] * depth_scale)
+                    if abs(testing2[0]-item[0]) < 0.05:  
+                        cv2.circle(detected_image, [int(testing2[0]),int(testing2[1])], 10, (0, 255, 0), 1)
 
                 # Display probe distance on reconstruction image
                 text_0 = "Probe Distance to Camera = " + f"{marker_depth:.3f}" + 'm'
