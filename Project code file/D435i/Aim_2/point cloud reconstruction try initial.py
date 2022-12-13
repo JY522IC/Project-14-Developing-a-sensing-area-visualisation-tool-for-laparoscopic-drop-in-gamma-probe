@@ -85,8 +85,8 @@ if not found_rgb:
     print("The demo requires Depth camera with Color sensor")
     exit(0)
 
-config.enable_stream(rs.stream.depth, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, rs.format.bgr8, 30)
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -242,9 +242,9 @@ def pointcloud(out, verts, texcoords, color, painter=True):
     """draw point cloud with optional painter's algorithm"""
     if painter:
         # Painter's algo, sort points from back to front
-
         # get reverse sorted indices by z (in view-space)
         # https://gist.github.com/stevenvo/e3dad127598842459b68
+
         v = view(verts)
         s = v[:, 2].argsort()[::-1]
         proj = project(v[s])
@@ -344,7 +344,16 @@ while True:
         state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
-    cv2.imshow(state.WIN_NAME, out)
+    text_0 = "Image defore reconstruction"
+    cv2.putText(color_image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (0, 255, 0), 2)
+
+    text_1 = "Image after reconstruction"
+    cv2.putText(out, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (0, 255, 0), 2)
+
+    out2 = np.hstack([out, color_image])
+    cv2.imshow(state.WIN_NAME, out2)
     key = cv2.waitKey(1)
 
     if key == ord("r"):

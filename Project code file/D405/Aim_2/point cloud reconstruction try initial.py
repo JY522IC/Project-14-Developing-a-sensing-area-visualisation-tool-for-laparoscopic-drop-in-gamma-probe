@@ -37,38 +37,6 @@ import cv2
 import numpy as np
 import pyrealsense2 as rs
 
-# Blob detecter
-# set aruco dictionary and parameters
-aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-aruco_params = cv2.aruco.DetectorParameters_create()
-
-params = cv2.SimpleBlobDetector_Params()
-# Change thresholds
-params.minThreshold = 10
-params.maxThreshold = 200
-
-
-# Filter by Area.
-params.filterByArea = True
-params.minArea = 50
-params.maxArea = 2000
-
-# Filter by Circularity
-params.filterByCircularity = True
-params.minCircularity = 0.1
-
-# Filter by Convexity
-params.filterByConvexity = True
-params.minConvexity = 0.85
-
-params.minRepeatability = 2
-params.minCircularity = 0.75
-
-# Filter by Inertia
-params.filterByInertia = True
-params.minInertiaRatio = 0.01
-detector = cv2.SimpleBlobDetector_create(params)
-
 class AppState:
 
     def __init__(self, *args, **kwargs):
@@ -113,12 +81,10 @@ for s in device.sensors:
     if s.get_info(rs.camera_info.name) == 'RGB Camera':
         found_rgb = True
         break
-if not found_rgb:
-    print("The demo requires Depth camera with Color sensor")
-    exit(0)
 
-config.enable_stream(rs.stream.depth, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, rs.format.bgr8, 30)
+
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -274,9 +240,9 @@ def pointcloud(out, verts, texcoords, color, painter=True):
     """draw point cloud with optional painter's algorithm"""
     if painter:
         # Painter's algo, sort points from back to front
-
         # get reverse sorted indices by z (in view-space)
         # https://gist.github.com/stevenvo/e3dad127598842459b68
+
         v = view(verts)
         s = v[:, 2].argsort()[::-1]
         proj = project(v[s])
@@ -315,11 +281,6 @@ def pointcloud(out, verts, texcoords, color, painter=True):
 out = np.empty((h, w, 3), dtype=np.uint8)
 
 while True:
-
-    keypoints = None
-    depth_intrinsics = None
-    depth_image = None
-
     # Grab camera data
     if not state.paused:
         # Wait for a coherent pair of frames: depth and color
@@ -337,8 +298,6 @@ while True:
 
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        keypoints = detector.detect(color_image)
-        print(keypoints)
 
         depth_colormap = np.asanyarray(
             colorizer.colorize(depth_frame).get_data())
@@ -383,17 +342,16 @@ while True:
         state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
-    if keypoints != None:
-        w, h = depth_image.shape[0], depth_image.shape[1]
-        for k in keypoints:
-            x, y = k.pt
-            x, y = int(x), int(y)
-            if x >= 0 and x < w and y >= 0 and y < h:
-                p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x, y], depth_image[x, y])
-                line3d(out, view([p[0]-20, p[1], p[2]]), view([p[0]+20, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
-                line3d(out, view([p[0], p[1]-20, p[2]]), view([p[0], p[1]+20, p[2]]), (0x7a, 0xf7, 0x4d))
+    text_0 = "Image defore reconstruction"
+    cv2.putText(color_image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (0, 255, 0), 2)
 
-    cv2.imshow(state.WIN_NAME, out)
+    text_1 = "Image after reconstruction"
+    cv2.putText(out, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (0, 255, 0), 2)
+
+    out2 = np.hstack([out, color_image])
+    cv2.imshow(state.WIN_NAME, out2)
     key = cv2.waitKey(1)
 
     if key == ord("r"):
