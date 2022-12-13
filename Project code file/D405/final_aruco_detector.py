@@ -493,6 +493,27 @@ while True:
                     line3d(out, view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)), (0, 0xff, 0), 1)
                     line3d(out, view(p), view(p + np.dot((0.1, 0, 0), rotation_matrix)), (0, 0, 0xff), 1)
 
+
+                    for item in np.linspace(p, p + np.dot((0, 0.9, 0), rotation_matrix), 100):
+                    
+                        testing = rs.rs2_project_point_to_pixel( color_intrin,item)
+                        # cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 1)
+                        depth_pixel2 = rs.rs2_project_color_pixel_to_depth_pixel(
+                            depth_frame.get_data(),
+                            depth_scale,
+                            0.01,
+                            1.0,
+                            depth_intrin,
+                            color_intrin,
+                            depth_to_color_extrin,
+                            color_to_depth_extrin,
+                            [testing[0],testing[1]]
+                        )
+                        testing2= rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel2[0], depth_pixel2[1]], depth_image[int(depth_pixel2[0]), int(depth_pixel2[1])] * depth_scale)
+                        print(testing2, item)
+                        if abs(testing2[1]-item[1]) < 0.01:  
+                            cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 5)
+
                     # Display probe distance on reconstruction image
                     text_0 = "Probe Distance to Camera = " + f"{depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale:.3f}" + 'm'
                     cv2.putText(detected_image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['red'])

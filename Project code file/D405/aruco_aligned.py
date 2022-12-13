@@ -489,13 +489,17 @@ while True:
                 #             intersection_point = rs.rs2_project_point_to_pixel(color_intrin, v)
                 #             cv2.circle(detected_image, (int(intersection_point[0]), int(intersection_point[1])), 10, colors['red'], -1)
                 #             break
-
-                for item in np.linspace(view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)),100):
-                    testing = rs.rs2_project_point_to_pixel( depth_intrinsics,item)
+                for item in np.linspace(p, p + np.dot((0, 0.9, 0), rotation_matrix), 100):
+                    
+                    testing = rs.rs2_project_point_to_pixel( color_intrin,item)
+                    # cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 1)
+                    testing[0] = int(testing[0] / (2**state.decimate))
+                    testing[1] = int(testing[1] / (2**state.decimate))
                     testing2= rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing[0], testing[1]], depth_image[int(testing[0]), int(testing[1])] * depth_scale)
                     print(testing2, item)
-                    if abs(testing2[0]-item[0]) < 0.05:  
-                        cv2.circle(detected_image, [int(testing2[0]),int(testing2[1])], 10, (0, 255, 0), 1)
+                    if abs(testing2[1]-item[1]) < 0.01:  
+                        cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 4)
+                        break
 
                 # Display probe distance on reconstruction image
                 text_0 = "Probe Distance to Camera = " + f"{marker_depth:.3f}" + 'm'
