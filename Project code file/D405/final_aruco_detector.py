@@ -489,13 +489,14 @@ while True:
                     print(f"Marker depth: {depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale} m")
                     if p[2] <= 0:
                         continue
-                    line3d(out, view(p), view(p) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 1)
-                    line3d(out, view(p), view(p) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 1)
-                    line3d(out, view(p), view(p) + np.dot((0.1, 0, 0), rotation_matrix), (0, 0, 0xff), 1)
+                    line3d(out, view(p), view(p + np.dot((0, 0, 0.1), rotation_matrix)), (0xff, 0, 0), 1)
+                    line3d(out, view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)), (0, 0xff, 0), 1)
+                    line3d(out, view(p), view(p + np.dot((0.1, 0, 0), rotation_matrix)), (0, 0, 0xff), 1)
 
                     # Display probe distance on reconstruction image
                     text_0 = "Probe Distance to Camera = " + f"{depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale:.3f}" + 'm'
                     cv2.putText(detected_image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['red'])
+                    cv2.putText(detected_image,"ID number:"+ f"{i}",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
 
                 except Exception as e:
                     print(e)
@@ -547,11 +548,13 @@ while True:
 
                     # Display the relative disdance and relative postion on reconstruction image
                     text_1 = "Point 1 position: X = " + str(p_1[0]) + "Y = " + str(p_1[1]) + "Z = "+ str(p_1[2])
-                    text_2 = "Point 2 position: X = " + str(p_2[0]) + "Y = " + str(p_2[1]) + "Z = " + str(p_2[2])
+                    text_2 = "Point 2 position: X = " + str(p_2[0]) + "Y = " + str(p_2[1]) + "Z = "+ str(p_2[2])
                     text_3 = "The relative distance between two point" + str(disance_between_points)
                     cv2.putText(detected_image, text_1, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
                     cv2.putText(detected_image, text_2, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
                     cv2.putText(detected_image, text_3, (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
+                    cv2.putText(detected_image,"ID number:"+ f"{0}",(x_1,y_1),cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
+                    cv2.putText(detected_image,"ID number:"+ f"{1}",(x_2,y_2),cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
 
                 except Exception as e:
                     # print(e)
