@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# @Time    : 2022/11/18 10:34
+# @Author  : Yiyang
+# @File    : test_JAY.py
+# @Contact: jy522@ic.ac.uk
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 # @Time    : 2022/10/28 10:39
 # @Author  : Yiyang
 # @File    : point cloud reconstruction try.py
@@ -9,14 +15,17 @@
 
 """
 OpenCV and Numpy Point cloud Software Renderer
+
 This sample is mostly for demonstration and educational purposes.
 It really doesn't offer the quality or performance that can be
 achieved with hardware acceleration.
+
 Usage:
 ------
 Mouse:
     Drag with left button to rotate around pivot (thick small axes),
     with right button to translate and the wheel to zoom.
+
 Keyboard:
     [p]     Pause
     [r]     Reset View
@@ -34,68 +43,9 @@ import cv2
 import numpy as np
 import pyrealsense2 as rs
 
-import cv2
-
-ARUCO_DICT = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-ARUCO_PARAMS = cv2.aruco.DetectorParameters_create()
-
-
-# Aruco Marker Class
-class ArucoMarker:
-
-    def __init__(self, camera_matrix, dist_coef):
-        self.camera_matrix = camera_matrix
-        self.dist_coef = dist_coef
-
-    def detect(self, image):
-        return cv2.aruco.detectMarkers(image, ARUCO_DICT, parameters=ARUCO_PARAMS)
-    
-    def detect_and_display_pose(self, image):
-        image_copy = image.copy()
-        corners, ids, _ = self.detect(image_copy)
-        rvecs = []
-        tvecs = []
-        central_points = []
-        if len(corners) > 0:
-            # flatten the ArUco IDs list
-            ids = ids.flatten()
-
-            # estimate the pose of each marker
-            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners, 0.015, self.camera_matrix, self.dist_coef)
-            rvecs.append(rvec)
-            tvecs.append(tvec)
-
-            # (rvec-tvec).any() # get rid of that nasty numpy value array error
-            for (markerCorners, rvec, tvec) in zip(corners, rvec, tvec):
-                # draw axis for the aruco markers
-                cv2.drawFrameAxes(image_copy, self.camera_matrix, self.dist_coef, rvec, tvec, 0.1)
-
-                corners = markerCorners.reshape((4, 2))
-                (topLeft, topRight, bottomRight, bottomLeft) = corners
-
-                # convert each of the (x, y)-coordinate pairs to integers
-                topRight = (int(topRight[0]), int(topRight[1]))
-                bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
-                bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
-                topLeft = (int(topLeft[0]), int(topLeft[1]))
-
-                cX = int((topLeft[0] + bottomRight[0]) / 2.0)
-                cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-                central_points.append([cX,cY])
-
-        return image_copy, rvecs, tvecs, central_points
-
-
-cam_cal = np.load("calibration_realsense.npz")
-camera_matrix = cam_cal['camera_matrix']
-dist_coef = cam_cal['dist_coef']
-
-# Instantiate marker detector
-mark = ArucoMarker(camera_matrix, dist_coef)
-
-axesPoints = np.float32([[0,0,0], [0,0.1,0], [0,0,0.1]]).reshape(-1,3)
-
 # Blob detecter
+# set aruco dictionary and parameters
+
 params = cv2.SimpleBlobDetector_Params()
 # Change thresholds
 params.minThreshold = 10
@@ -167,10 +117,10 @@ for s in device.sensors:
     if s.get_info(rs.camera_info.name) == 'RGB Camera':
         found_rgb = True
         break
-<<<<<<< HEAD
-=======
+if not found_rgb:
+    print("The demo requires Depth camera with Color sensor")
+    exit(0)
 
->>>>>>> c5fb7d42b68448ff6efd5440a68ab09a4e3f118a
 config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
@@ -370,13 +320,9 @@ out = np.empty((h, w, 3), dtype=np.uint8)
 
 while True:
 
+    keypoints = None
     depth_intrinsics = None
     depth_image = None
-    detected_image = None
-
-    rvecs = None
-    tvecs = None
-    centralPoints = None
 
     # Grab camera data
     if not state.paused:
@@ -403,8 +349,8 @@ while True:
 
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        detected_image, rvecs, tvecs, centralPoints = mark.detect_and_display_pose(color_image)
-        # print(rvec,tvec)
+        keypoints = detector.detect(color_image)
+        print(keypoints)
 
         depth_colormap = np.asanyarray(
             colorizer.colorize(depth_frame).get_data())
@@ -451,7 +397,6 @@ while True:
         state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
         (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
 
-
     ## ---------------------------------------------------------------------------------------------------------------##
     ## GUI design based on openCV
 
@@ -460,17 +405,32 @@ while True:
               'gray': (125, 125, 125), 'dark_gray': (50, 50, 50), 'light_gray': (220, 220, 220),
               'rand': np.random.randint(0, high=256, size=(3,)).tolist()}
 
+    # Top text
+    text_0 = "Probe"
+    cv2.putText(color_image,text_0,(50,10),cv2.FONT_HERSHEY_SIMPLEX,1,colors['black'])
+
+    # Text on probe
+    x_avg = 0
+    y_avg = 0
+
+    # Draw the 2D line for the marker in color_image
+    if keypoints != None:
+        for k in keypoints:
+            x, y = k.pt
+            cv2.circle(color_image, (round(x), round(y)), 5, (0, 0, 255), 5)
+            x_avg += x
+            y_avg += y
+        if len(keypoints) != 0:
+            x_avg = x_avg/len(keypoints)
+            x_avg = x_avg/len(keypoints)
+            cv2.rectangle(color_image, (round(x_avg-50), round(y_avg-50)), (round(x_avg+50), round(y_avg+50)), colors['black'], 10)
+
     # Draw the 3D line for the marker in space
-    if centralPoints != []:
+    if keypoints != None:
         w, h = depth_image.shape[1], depth_image.shape[0]
-        for i in range(len(centralPoints)):
-            try:
-                centralPoint = centralPoints[i]
-                rvec = rvecs[i]
-                tvec = tvecs[i]
-            except:
-                continue
-            x, y = centralPoint[0], centralPoint[1]
+        for k in keypoints:
+            x, y = k.pt
+            x_dec, y_dec = x/(2**state.decimate), y/(2**state.decimate)
             depth_pixel = rs.rs2_project_color_pixel_to_depth_pixel(
                 depth_frame.get_data(),
                 depth_scale,
@@ -482,85 +442,17 @@ while True:
                 color_to_depth_extrin,
                 [x,y]
             )
+            # Observer depth_pixel, depth_scale, x, y
+            if x_dec >= 0 and x_dec < w and y_dec >= 0 and y_dec < h and int(depth_pixel[0]) < depth_image.shape[0] \
+                    and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
+                p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
+                line3d(out, view([p[0]-0.01, p[1], p[2]]), view([p[0]+0.01, p[1], p[2]]), (0x7a, 0xf7, 0x4d))
+                line3d(out, view([p[0], p[1]-0.01, p[2]]), view([p[0], p[1]+0.01, p[2]]), (0x7a, 0xf7, 0x4d))
 
-            if int(depth_pixel[0]) < depth_image.shape[0] and int(depth_pixel[1]) < depth_image.shape[1] and int(depth_pixel[0]) >= 0 and int(depth_pixel[1]) >= 0:
-                try:
-                    image_points = cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef)
-                    rotation_matrix = cv2.Rodrigues(rvec)[0]
-                    # rotation_matrix = np.dot(state.rotation, rotation_matrix[0])
-                    p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [depth_pixel[0], depth_pixel[1]], depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale)
-                    print(f"Marker depth: {depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale} m")
-                    if p[2] <= 0:
-                        continue
-                    line3d(out, view(p), view(p) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 1)
-                    line3d(out, view(p), view(p) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 1)
-                    line3d(out, view(p), view(p) + np.dot((0.1, 0, 0), rotation_matrix), (0, 0, 0xff), 1)
 
-                    # Display probe distance on reconstruction image
-                    text_0 = "Probe Distance to Camera = " + f"{depth_image[int(depth_pixel[0]), int(depth_pixel[1])]*depth_scale:.3f}" + 'm'
-                    cv2.putText(detected_image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['red'])
 
-                except Exception as e:
-                    print(e)
 
-        # Calculate the distance between the probe and the test point
-        if len(centralPoints) == 2:
-            centralPoint_1 = centralPoints[0]
-            x_1, y_1 = centralPoint_1[0], centralPoint_1[1]
-            point_depth_pixel_1 = rs.rs2_project_color_pixel_to_depth_pixel(
-                depth_frame.get_data(),
-                depth_scale,
-                0.01,
-                1.0,
-                depth_intrin,
-                color_intrin,
-                depth_to_color_extrin,
-                color_to_depth_extrin,
-                [x_1,y_1]
-            )
-
-            centralPoint_2 = centralPoints[1]
-            x_2, y_2 = centralPoint_2[0], centralPoint_2[1]
-            point_depth_pixel_2 = rs.rs2_project_color_pixel_to_depth_pixel(
-                depth_frame.get_data(),
-                depth_scale,
-                0.01,
-                1.0,
-                depth_intrin,
-                color_intrin,
-                depth_to_color_extrin,
-                color_to_depth_extrin,
-                [x_2,y_2]
-            )
-
-            if int(point_depth_pixel_1[0]) < depth_image.shape[0] and int(point_depth_pixel_1[1]) \
-                < depth_image.shape[1] and int(point_depth_pixel_1[0]) >= 0 and int(point_depth_pixel_1[1] and\
-                    point_depth_pixel_2[0]) < depth_image.shape[0] and int(point_depth_pixel_2[1]) \
-                    < depth_image.shape[1] and int(point_depth_pixel_2[0]) >= 0 and int(point_depth_pixel_2[1]) >= 0:
-                try:
-                    p_1 = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [point_depth_pixel_1[0], point_depth_pixel_1[1]]\
-                        , depth_image[int(point_depth_pixel_1[0]), int(point_depth_pixel_1[1])] * depth_scale)
-                    p_2 = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [point_depth_pixel_2[0], point_depth_pixel_2[1]]\
-                        , depth_image[int(point_depth_pixel_2[0]), int(point_depth_pixel_2[1])] * depth_scale)
-                    disance_between_points = ((p_1[0] - p_2[0])** 2 + (p_1[1] - p_2[1])** 2 + (p_1[2] - p_2[2])** 2) ** (0.5)
-
-                    print('point 1 position', p_1)
-                    print('point 2 position', p_2)
-                    print('distance between 2 points', disance_between_points)
-
-                    # Display the relative disdance and relative postion on reconstruction image
-                    text_1 = "Point 1 position: X = " + str(p_1[0]) + "Y = " + str(p_1[1]) + "Z = "+ str(p_1[2])
-                    text_2 = "Point 2 position: X = " + str(p_2[0]) + "Y = " + str(p_2[1]) + "Z = " + str(p_2[2])
-                    text_3 = "The relative distance between two point" + str(disance_between_points)
-                    cv2.putText(detected_image, text_1, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
-                    cv2.putText(detected_image, text_2, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
-                    cv2.putText(detected_image, text_3, (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['blue'])
-
-                except Exception as e:
-                    # print(e)
-                    pass
-
-    out2 = np.hstack([out, detected_image])
+    out2 = np.hstack([out, color_image])
     cv2.imshow(state.WIN_NAME, out2)
     key = cv2.waitKey(1)
 
