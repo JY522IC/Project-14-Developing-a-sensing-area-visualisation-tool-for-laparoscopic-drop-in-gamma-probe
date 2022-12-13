@@ -66,7 +66,7 @@ except:
 _, camera_matrix, dist_coef, _, _ = cal
 
 # Save the calibration result
-np.savez('calibration_realsense.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
+np.savez('calibration_realsense_with_lens.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
 # np.savez('calibration_webcam.npz', camera_matrix=camera_matrix, dist_coef=dist_coef)
 # Release everything:
 cv2.destroyAllWindows()
