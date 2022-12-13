@@ -86,7 +86,7 @@ class ArucoMarker:
         return image_copy, rvecs, tvecs, central_points
 
 
-cam_cal = np.load("calibration_realsense.npz")
+cam_cal = np.load("calibration_realsense2.npz")
 camera_matrix = cam_cal['camera_matrix']
 dist_coef = cam_cal['dist_coef']
 
