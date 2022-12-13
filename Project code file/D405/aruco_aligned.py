@@ -471,18 +471,21 @@ while True:
             x, y = centralPoint[0], centralPoint[1]
             x = int(x / (2**state.decimate))
             y = int(y / (2**state.decimate))
-            
             try:
                 image_points = cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef)
                 rotation_matrix = cv2.Rodrigues(rvec)[0]
                 marker_depth = depth_image[int(y), int(x)] * depth_scale
                 p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x, y], marker_depth)
+
+                testing = rs.rs2_project_point_to_pixel( depth_intrinsics,[1,1,1])
+                print("testing++++++++++++++++++++++++++++++"+f"{testing}")
+                cv2.circle(detected_image, [testing[0],testing[1]], 0.4, "red", 1)
                 print(f"Marker depth: {marker_depth:.3f} m")
                 if p[2] <= 0:
                     continue
-                line3d(out, view(p), view(p) + np.dot((0, 0, 0.1), rotation_matrix), (0xff, 0, 0), 1)
-                line3d(out, view(p), view(p) + np.dot((0, 0.1, 0), rotation_matrix), (0, 0xff, 0), 1)
-                line3d(out, view(p), view(p) + np.dot((0.1, 0, 0), rotation_matrix), (0, 0, 0xff), 1)
+                line3d(out, view(p), view(p + np.dot((0, 0, 0.1), rotation_matrix)), (0xff, 0, 0), 1)
+                line3d(out, view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)), (0, 0xff, 0), 1)
+                line3d(out, view(p), view(p + np.dot((0.1, 0, 0), rotation_matrix)), (0, 0, 0xff), 1)
 
                 # Display probe distance on reconstruction image
                 text_0 = "Probe Distance to Camera = " + f"{marker_depth:.3f}" + 'm'
