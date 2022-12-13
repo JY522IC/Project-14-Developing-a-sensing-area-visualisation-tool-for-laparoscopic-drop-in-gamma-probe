@@ -490,10 +490,10 @@ while True:
                 #             cv2.circle(detected_image, (int(intersection_point[0]), int(intersection_point[1])), 10, colors['red'], -1)
                 #             break
 
-                for item in np.linspace(view(p), view(p + np.dot((0, 3, 0), rotation_matrix)),100):
+                for item in np.linspace(view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)),100):
                     testing = rs.rs2_project_point_to_pixel( depth_intrinsics,item)
-                    print(testing)
                     testing2= rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing[0], testing[1]], depth_image[int(testing[0]), int(testing[1])] * depth_scale)
+                    print(testing2, item)
                     if abs(testing2[0]-item[0]) < 0.05:  
                         cv2.circle(detected_image, [int(testing2[0]),int(testing2[1])], 10, (0, 255, 0), 1)
 
