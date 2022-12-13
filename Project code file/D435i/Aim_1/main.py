@@ -12,9 +12,10 @@ if __name__ == "__main__":
     # cam = camera.WebcamCamera() # webcam
 
     # Markers used
-    marker_detected = 2 
+    marker_detected = 3
     # marker type = 1, Blob type
-    # marker type = 2, Aruco type
+    # marker type = 2, Aruco type draw the marker with ID
+    # marker type = 3, Aruco type draw the coordinate
 
     if marker_detected == 1:
         # Load camera calibration
@@ -50,10 +51,18 @@ if __name__ == "__main__":
                 cv2.putText(image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX,
                             0.5, (0, 255, 0), 2)
 
-            else:
+            elif marker_detected == 2:
                 # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 image,central_points = mark.detect_and_display_boundary(frame)
-                text_0 = "Using Aruco markers"
+                text_0 = "Using Aruco markers draw the marker"
+                # draw the ArUco marker ID on the image
+                cv2.putText(image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5, (0, 255, 0), 2)
+
+            else:
+                # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                image, r, h, central_points = mark.detect_and_display_pose(frame)
+                text_0 = "Using Aruco markers display pose"
                 # draw the ArUco marker ID on the image
                 cv2.putText(image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX,
                             0.5, (0, 255, 0), 2)
