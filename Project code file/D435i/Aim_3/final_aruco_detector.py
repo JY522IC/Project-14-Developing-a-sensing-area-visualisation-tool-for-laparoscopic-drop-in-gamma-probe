@@ -36,9 +36,9 @@ import pyrealsense2 as rs
 
 import cv2
 
+# Basic defination for Aruco Marker
 ARUCO_DICT = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
 ARUCO_PARAMS = cv2.aruco.DetectorParameters_create()
-
 
 # Aruco Marker Class
 class ArucoMarker:
@@ -84,6 +84,7 @@ class ArucoMarker:
                 central_points.append([cX,cY])
 
         return image_copy, rvecs, tvecs, central_points
+
 
 
 cam_cal = np.load("calibration_realsense.npz")
@@ -167,6 +168,7 @@ for s in device.sensors:
     if s.get_info(rs.camera_info.name) == 'RGB Camera':
         found_rgb = True
         break
+
 config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
