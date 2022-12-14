@@ -49,7 +49,7 @@ class ArucoMarker:
 
     def detect(self, image):
         return cv2.aruco.detectMarkers(image, ARUCO_DICT, parameters=ARUCO_PARAMS)
-    
+
     def detect_and_display_pose(self, image):
         image_copy = image.copy()
         corners, ids, _ = self.detect(image_copy)
@@ -81,7 +81,7 @@ class ArucoMarker:
 
                 cX = int((topLeft[0] + bottomRight[0]) / 2.0)
                 cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-                central_points.append([cX,cY])
+                central_points.append([cX, cY])
 
         return image_copy, rvecs, tvecs, central_points
 
@@ -93,14 +93,13 @@ dist_coef = cam_cal['dist_coef']
 # Instantiate marker detector
 mark = ArucoMarker(camera_matrix, dist_coef)
 
-axesPoints = np.float32([[0,0,0], [0,0.1,0], [0,0,0.1]]).reshape(-1,3)
+axesPoints = np.float32([[0, 0, 0], [0, 0.1, 0], [0, 0, 0.1]]).reshape(-1, 3)
 
 # Blob detecter
 params = cv2.SimpleBlobDetector_Params()
 # Change thresholds
 params.minThreshold = 10
 params.maxThreshold = 200
-
 
 # Filter by Area.
 params.filterByArea = True
@@ -122,6 +121,7 @@ params.minCircularity = 0.75
 params.filterByInertia = True
 params.minInertiaRatio = 0.01
 detector = cv2.SimpleBlobDetector_create(params)
+
 
 class AppState:
 
@@ -189,7 +189,6 @@ colorizer = rs.colorizer()
 
 
 def mouse_cb(event, x, y, flags, param):
-
     if event == cv2.EVENT_LBUTTONDOWN:
         state.mouse_btns[0] = True
 
@@ -222,7 +221,7 @@ def mouse_cb(event, x, y, flags, param):
             state.translation -= np.dot(state.rotation, dp)
 
         elif state.mouse_btns[2]:
-            dz = math.sqrt(dx**2 + dy**2) * math.copysign(0.01, -dy)
+            dz = math.sqrt(dx ** 2 + dy ** 2) * math.copysign(0.01, -dy)
             state.translation[2] += dz
             state.distance -= dz
 
@@ -242,12 +241,12 @@ cv2.setMouseCallback(state.WIN_NAME, mouse_cb)
 def project(v):
     """project 3d vector array to 2d"""
     h, w = out.shape[:2]
-    view_aspect = float(h)/w
+    view_aspect = float(h) / w
 
     # ignore divide by zero for invalid depth
     with np.errstate(divide='ignore', invalid='ignore'):
         proj = v[:, :-1] / v[:, -1, np.newaxis] * \
-            (w*view_aspect, h) + (w/2.0, h/2.0)
+               (w * view_aspect, h) + (w / 2.0, h / 2.0)
 
     # near clipping
     znear = 0.03
@@ -279,12 +278,12 @@ def grid(out, pos, rotation=np.eye(3), size=1, n=10, color=(0x80, 0x80, 0x80)):
     pos = np.array(pos)
     s = size / float(n)
     s2 = 0.5 * size
-    for i in range(0, n+1):
-        x = -s2 + i*s
+    for i in range(0, n + 1):
+        x = -s2 + i * s
         line3d(out, view(pos + np.dot((x, 0, -s2), rotation)),
                view(pos + np.dot((x, 0, s2), rotation)), color)
-    for i in range(0, n+1):
-        z = -s2 + i*s
+    for i in range(0, n + 1):
+        z = -s2 + i * s
         line3d(out, view(pos + np.dot((-s2, 0, z), rotation)),
                view(pos + np.dot((s2, 0, z), rotation)), color)
 
@@ -335,7 +334,7 @@ def pointcloud(out, verts, texcoords, color, painter=True):
         proj = project(view(verts))
 
     if state.scale:
-        proj *= 0.5**state.decimate
+        proj *= 0.5 ** state.decimate
 
     h, w = out.shape[:2]
 
@@ -356,8 +355,8 @@ def pointcloud(out, verts, texcoords, color, painter=True):
     else:
         v, u = (texcoords * (cw, ch) + 0.5).astype(np.uint32).T
     # clip texcoords to image
-    np.clip(u, 0, ch-1, out=u)
-    np.clip(v, 0, cw-1, out=v)
+    np.clip(u, 0, ch - 1, out=u)
+    np.clip(v, 0, cw - 1, out=v)
 
     # perform uv-mapping
     out[i[m], j[m]] = color[u[m], v[m]]
@@ -379,7 +378,7 @@ while True:
     if not state.paused:
         # Wait for a coherent pair of frames: depth and color
         frames = pipeline.wait_for_frames()
-        
+
         align = rs.align(rs.stream.color)
         frames = align.process(frames)
 
@@ -447,8 +446,7 @@ while True:
 
     cv2.setWindowTitle(
         state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
-        (w, h, 1.0/dt, dt*1000, "PAUSED" if state.paused else ""))
-
+                        (w, h, 1.0 / dt, dt * 1000, "PAUSED" if state.paused else ""))
 
     ## ---------------------------------------------------------------------------------------------------------------##
     ## GUI design based on openCV
@@ -469,10 +467,10 @@ while True:
             except:
                 continue
             x, y = centralPoint[0], centralPoint[1]
-            x = int(x / (2**state.decimate))
-            y = int(y / (2**state.decimate))
+            x = int(x / (2 ** state.decimate))
+            y = int(y / (2 ** state.decimate))
             try:
-                image_points = cv2.projectPoints(axesPoints,rvec,tvec,camera_matrix,dist_coef)
+                image_points = cv2.projectPoints(axesPoints, rvec, tvec, camera_matrix, dist_coef)
                 rotation_matrix = cv2.Rodrigues(rvec)[0]
                 marker_depth = depth_image[int(y), int(x)] * depth_scale
                 p = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x, y], marker_depth)
@@ -489,16 +487,16 @@ while True:
                 #             intersection_point = rs.rs2_project_point_to_pixel(color_intrin, v)
                 #             cv2.circle(detected_image, (int(intersection_point[0]), int(intersection_point[1])), 10, colors['red'], -1)
                 #             break
-                for item in np.linspace(p, p + np.dot((0, 0.9, 0), rotation_matrix), 100):
-                    
-                    testing = rs.rs2_project_point_to_pixel( color_intrin,item)
+                for item in np.linspace(p + np.dot((0, 0.05, 0), rotation_matrix), p + np.dot((0, 0.4, 0), rotation_matrix), 100):
+
+                    testing = rs.rs2_project_point_to_pixel(color_intrin, item)
                     # cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 1)
-                    testing[0] = int(testing[0] / (2**state.decimate))
-                    testing[1] = int(testing[1] / (2**state.decimate))
-                    testing2= rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing[0], testing[1]], depth_image[int(testing[0]), int(testing[1])] * depth_scale)
+                    testing_2d = [int(testing[0] / (2 ** state.decimate)), int(testing[1] / (2 ** state.decimate))]
+                    testing2 = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing_2d[0], testing_2d[1]], depth_image[
+                        int(testing_2d[0]), int(testing_2d[1])] * depth_scale)
                     print(testing2, item)
-                    if abs(testing2[1]-item[1]) < 0.01:  
-                        cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 4)
+                    if abs(testing2[1] - item[1]) < 0.01:
+                        cv2.circle(detected_image, [int(testing[0]), int(testing[1])], 10, (0, 255, 0), 4)
                         break
 
                 # Display probe distance on reconstruction image
@@ -512,13 +510,13 @@ while True:
         if len(centralPoints) == 2:
             centralPoint_1 = centralPoints[0]
             x_1, y_1 = centralPoint_1[0], centralPoint_1[1]
-            x_1 = int(x_1 / (2**state.decimate))
-            y_1 = int(y_1 / (2**state.decimate))
+            x_1 = int(x_1 / (2 ** state.decimate))
+            y_1 = int(y_1 / (2 ** state.decimate))
 
             centralPoint_2 = centralPoints[1]
             x_2, y_2 = centralPoint_2[0], centralPoint_2[1]
-            x_2 = int(x_2 / (2**state.decimate))
-            y_2 = int(y_2 / (2**state.decimate))
+            x_2 = int(x_2 / (2 ** state.decimate))
+            y_2 = int(y_2 / (2 ** state.decimate))
 
             try:
                 marker_depth_1 = depth_image[int(y_1), int(x_1)] * depth_scale
@@ -527,7 +525,8 @@ while True:
                 marker_depth_2 = depth_image[int(y_2), int(x_2)] * depth_scale
                 p_2 = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [x_2, y_2], marker_depth_2)
 
-                disance_between_points = ((p_1[0] - p_2[0])** 2 + (p_1[1] - p_2[1])** 2 + (p_1[2] - p_2[2])** 2) ** (0.5)
+                disance_between_points = ((p_1[0] - p_2[0]) ** 2 + (p_1[1] - p_2[1]) ** 2 + (p_1[2] - p_2[2]) ** 2) ** (
+                    0.5)
 
                 print(f'distance between 2 points {disance_between_points:.3f}m')
 

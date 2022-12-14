@@ -12,12 +12,12 @@ if __name__ == "__main__":
     # cam = camera.WebcamCamera() # webcam
 
     # Markers used
-    marker_detected = 3
+    marker_detected = 2
     # marker type = 1, Blob type
     # marker type = 2, Aruco type draw the marker with ID
     # marker type = 3, Aruco type draw the coordinate
 
-    cam_cal = np.load("calibration/calibration_realsense_D435i.npz.npz")
+    cam_cal = np.load("calibration/calibration_realsense_D435i.npz")
 
     if marker_detected == 1:
         # Load camera calibration
