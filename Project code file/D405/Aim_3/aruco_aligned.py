@@ -421,32 +421,6 @@ while True:
         verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
         texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
 
-    # Render
-    now = time.time()
-
-    out.fill(0)
-
-    grid(out, (0, 0.5, 1), size=1, n=10)
-    frustum(out, depth_intrinsics)
-    axes(out, view([0, 0, 0]), state.rotation, size=0.1, thickness=1)
-
-    if not state.scale or out.shape[:2] == (h, w):
-        pointcloud(out, verts, texcoords, color_source)
-    else:
-        tmp = np.zeros((h, w, 3), dtype=np.uint8)
-        pointcloud(tmp, verts, texcoords, color_source)
-        tmp = cv2.resize(
-            tmp, out.shape[:2][::-1], interpolation=cv2.INTER_NEAREST)
-        np.putmask(out, tmp > 0, tmp)
-
-    if any(state.mouse_btns):
-        axes(out, view(state.pivot), state.rotation, thickness=4)
-
-    dt = time.time() - now
-
-    cv2.setWindowTitle(
-        state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
-                        (w, h, 1.0 / dt, dt * 1000, "PAUSED" if state.paused else ""))
 
     ## ---------------------------------------------------------------------------------------------------------------##
     ## GUI design based on openCV
@@ -481,19 +455,40 @@ while True:
                 line3d(out, view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)), (0, 0xff, 0), 1)
                 line3d(out, view(p), view(p + np.dot((0.1, 0, 0), rotation_matrix)), (0, 0, 0xff), 1)
 
-                for item in np.linspace(p, p + np.dot((0, 0.9, 0), rotation_matrix), 100):
-                    
+                for item in np.linspace(p + np.dot((0, 0.05, 0), rotation_matrix), p + np.dot((0, 0.9, 0), rotation_matrix), 100):
                     testing = rs.rs2_project_point_to_pixel( color_intrin,item)
-                    testing[0] = int(testing[0] / (2**state.decimate))
-                    testing[1] = int(testing[1] / (2**state.decimate))
-                    testing2= rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing[0], testing[1]], depth_image[int(testing[0]), int(testing[1])] * depth_scale)
-                    if abs(testing2[1]-item[1]) < 0.01:  
-                        cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 4)
+                    testing_decimate = [int(testing[0] / (2**state.decimate)), int(testing[1] / (2**state.decimate))]
+                    testing2 = rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing_decimate[0], testing_decimate[1]], depth_image[int(testing_decimate[0]), int(testing_decimate[1])] * depth_scale)
+                    if abs(testing2[1]-item[1]) < 0.01:
+                        # Create overlay on 2D image
+                        overlay = np.zeros_like(detected_image, np.uint8)
+                        cv2.circle(color_source, [int(testing[0]), int(testing[1])], 20, (0, 212, 0), -1)
+                        mask = overlay.astype(bool)
+                        alpha = 0.01
+                        detected_image[mask] = cv2.addWeighted(detected_image, alpha, overlay, 1-alpha, 0)[mask]
+
+                        # Create overlay on 2D image
+                        overlay = np.zeros_like(detected_image, np.uint8)
+                        cv2.circle(overlay, [int(testing[0]),int(testing[1])], 20, (0, 212, 0), -1)
+                        mask = overlay.astype(bool)
+                        alpha = 0.01
+                        detected_image[mask] = cv2.addWeighted(detected_image, alpha, overlay, 1-alpha, 0)[mask]
+
+                        # Display relative distance on reconstruction image
+                        relative_distance = ((testing2[0] - p[0]) ** 2 + (testing2[1] - p[1]) ** 2 + (testing2[2] - p[2]) ** 2) ** 0.5
+                        text_0 = "Relative distance between the Sensing Area and probe = " + f"{relative_distance:.3f}" + 'm'
+                        cv2.putText(detected_image, text_0, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['red'])
+
                         break
 
                 # Display probe distance on reconstruction image
                 text_0 = "Probe Distance to Camera = " + f"{marker_depth:.3f}" + 'm'
                 cv2.putText(detected_image, text_0, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['red'])
+
+                # Display tissue area distance to camera on reconstruction image
+                text_0 = "Sensing Area Distance to Camera = " + f"{depth_image[int(testing_decimate[0]), int(testing_decimate[1])] * depth_scale:.3f}" + 'm'
+                cv2.putText(detected_image, text_0, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, colors['red'])
+
 
             except Exception as e:
                 print(e)
@@ -529,6 +524,35 @@ while True:
             except Exception as e:
                 # print(e)
                 pass
+
+
+    # Render
+    now = time.time()
+
+    out.fill(0)
+
+    grid(out, (0, 0.5, 1), size=1, n=10)
+    frustum(out, depth_intrinsics)
+    axes(out, view([0, 0, 0]), state.rotation, size=0.1, thickness=1)
+
+    if not state.scale or out.shape[:2] == (h, w):
+        pointcloud(out, verts, texcoords, color_source)
+    else:
+        tmp = np.zeros((h, w, 3), dtype=np.uint8)
+        pointcloud(tmp, verts, texcoords, color_source)
+        tmp = cv2.resize(
+            tmp, out.shape[:2][::-1], interpolation=cv2.INTER_NEAREST)
+        np.putmask(out, tmp > 0, tmp)
+
+    if any(state.mouse_btns):
+        axes(out, view(state.pivot), state.rotation, thickness=4)
+
+    dt = time.time() - now
+
+    cv2.setWindowTitle(
+        state.WIN_NAME, "RealSense (%dx%d) %dFPS (%.2fms) %s" %
+                        (w, h, 1.0 / dt, dt * 1000, "PAUSED" if state.paused else ""))
+
 
     out2 = np.hstack([out, detected_image])
     cv2.imshow(state.WIN_NAME, out2)
