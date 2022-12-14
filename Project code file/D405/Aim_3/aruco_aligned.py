@@ -481,6 +481,7 @@ while True:
                 line3d(out, view(p), view(p + np.dot((0, 0.9, 0), rotation_matrix)), (0, 0xff, 0), 1)
                 line3d(out, view(p), view(p + np.dot((0.1, 0, 0), rotation_matrix)), (0, 0, 0xff), 1)
 
+<<<<<<< HEAD
                 # for pts in np.linspace(p, p + np.dot((0, 0.5, 0), rotation_matrix), 100):
                 #     for v in verts:
                 #         if np.linalg.norm(pts - v) < 0.01:
@@ -497,6 +498,16 @@ while True:
                     print(testing2, item)
                     if abs(testing2[1] - item[1]) < 0.01:
                         cv2.circle(detected_image, [int(testing[0]), int(testing[1])], 10, (0, 255, 0), 4)
+=======
+                for item in np.linspace(p, p + np.dot((0, 0.9, 0), rotation_matrix), 100):
+                    
+                    testing = rs.rs2_project_point_to_pixel( color_intrin,item)
+                    testing[0] = int(testing[0] / (2**state.decimate))
+                    testing[1] = int(testing[1] / (2**state.decimate))
+                    testing2= rs.rs2_deproject_pixel_to_point(depth_intrinsics, [testing[0], testing[1]], depth_image[int(testing[0]), int(testing[1])] * depth_scale)
+                    if abs(testing2[1]-item[1]) < 0.01:  
+                        cv2.circle(detected_image, [int(testing[0]),int(testing[1])], 10, (0, 255, 0), 4)
+>>>>>>> ed4a5084b0bb1d70d21c6f84a369d938177616ab
                         break
 
                 # Display probe distance on reconstruction image
