@@ -134,3 +134,51 @@ Developing a sensing area visualisation tool for laparoscopic drop in gamma prob
   - Find the Aruco pose axis in color image
   - Projected the direction axis to 3D space
   
+### 2022/11/28 2pm-6pm 
+   - Meeting with Dr.Daniel 
+   - Implement the problem we meet for find the depth and position of probe and coordinates 
+   - Discussion with kaizhong about the calibration problem with lens 
+
+### 2022/12/01 10am-1pm 
+   - Finish making the PPT template 
+   - Try some way to fix the problem based on the original code 
+
+### 2022/12/02 10am-12am 
+   - Look up the information about self-calibration using Pyrealsense camera 
+
+### 2022/12/03 1pm-6pm 
+   - Using Intel RealSense Viewer for On-chip Calibration, Tare clibration, focus-length calibration 
+
+### 2022/12/05 2pm-5pm 
+   - Meeting with Dr.Daniel 
+   - Discussion with Kaizhong about experimentation and last week plan. 
+   - Decided to change camera 
+
+### 2022/12/06 2pm-5pm 
+   - Concluded previous results 
+
+### 2022/12/08 10am-1pm 
+   - Searched on sensing area visualisation 
+   - Tried to implement sensing area visualisation on the code 
+
+### 2022/12/09 10am-1pm 
+   - Debugged the code to solve poor detecting problem 
+   - Modified to code for better visualisation 
+
+### 2022/12/12 2pm-5pm 
+   - Meeting with Dr.Daniel about presentation 
+   - Tested the code on the new camera D405
+
+### 2022/12/13 2pm-10 
+   - Try to find the sensing area on the tissue
+   - Improved code and collected video results 
+
+### 2022/12/14 2pm-8pm 
+   - Improved code and collected video results 
+   - Collect data
+   - Finsh the PPT for the presentation
+
+### 2022/12/15 10am-1pm 
+   - Prepared for presentation 
+
+ ### 2022/12/16 Presentation 
